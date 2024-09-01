@@ -1,6 +1,12 @@
 @extends('home/tamplate')
     
 @section('content')
+<style>
+    .clickable-row {
+        cursor: pointer;
+    }
+</style>
+
 
 <div class="page-heading">
     <div class="page-title">
@@ -29,31 +35,29 @@
                         <tr>
                             <th>NIM</th>
                             <th>Nama Mahasiswa</th>
-                            <th>Semester</th>
+                            {{-- <th>Semester</th>
                             <th>Data Kegiatan</th>
                             <th>File Kegiatan</th>
-                            <th>Point Kegiatan</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th>Point Kegiatan</th> --}}
+                            {{-- <th>Status</th>
+                            <th>Action</th> --}}
                         </tr>
                     </thead>
                     <tbody>  
                          
                         @foreach ($keaktifans as $keaktifan)   
-                        <tr>
+                        <tr class="clickable-row" onclick="location.href='/keaktifanmahasiswa/validasi/{{$keaktifan['nim']}}'">
+                            
                             <td>{{$keaktifan['nim']}}</td>
                             <td>{{$keaktifan['nama_mahasiswa']}}</td>
-                            <td>{{$keaktifan['semester']}}</td>
-                            <td>{{$keaktifan['data_kegiatan']}}</td>         
-                            <td><a href="/filekegiatan/{{$keaktifan['file_kegiatan']}}" target="_blank">{{$keaktifan['file_kegiatan']}}</a></td>
-                             <td>{{$keaktifan['point_kegiatan']}}</td>
-                             <td>{{$keaktifan['status']}}</td>
-                            <td>
+                             {{-- <td>{{$keaktifan['point_kegiatan']}}</td>
+                             <td>{{$keaktifan['status']}}</td> --}}
+                            {{-- <td> --}}
                                 {{-- detail by nim --}}
-                                <button data-bs-target="#validasi{{$keaktifan['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
-                            </td>
+                                {{-- <button data-bs-target="#validasi{{$keaktifan['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button> --}}
+                            {{-- </td> --}}
                         </tr>
-                        <div class="modal fade text-left" id="validasi{{$keaktifan['id']}}" tabindex="-1"
+                        {{-- <div class="modal fade text-left" id="validasi{{$keaktifan['id']}}" tabindex="-1"
                             role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-scrollable"
                                 role="document">
@@ -88,14 +92,7 @@
                                                         <i class="bi bi-pen"></i>
                                                     </div>
                                                 </div>
-                                                <label for="password-id-icon">Semester</label>
-                                                <div class="position-relative">
-                                                    <input type="text" class="form-control" name="semester"
-                                                    placeholder="semester" id="password-id-icon" value="{{$keaktifan['semester']}}" required readonly>
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-megaphone"></i>
-                                                    </div>
-                                                </div>
+                                                
                                                 <label for="password-id-icon">Data Kegiatan</label>
                                                 <div class="position-relative">
                                                     <input type="text" class="form-control" name="data_kegiatan"
@@ -105,26 +102,26 @@
                                                     </div>
                                                 </div>
                                                 <label for="password-id-icon">Status</label>
-                                                <div class="position-relative">
+                                                <div class="position-relative"> --}}
                                                     {{-- dropdown status dengan pilihan Disetujui , Ditolak, Menunggu --}}
-                                                    <select class="form-select" name="status" id="status" required>
+                                                    {{-- <select class="form-select" name="status" id="status" required> --}}
                                                         {{-- jika data $keaktifan['status sama maka pilih'] --}}
-                                                        <option value="Disetujui" {{$keaktifan['status'] == 'Disetujui' ? 'selected' : ''}}>Disetujui</option>
+                                                        {{-- <option value="Disetujui" {{$keaktifan['status'] == 'Disetujui' ? 'selected' : ''}}>Disetujui</option>
                                                         <option value="Ditolak" {{$keaktifan['status'] == 'Ditolak' ? 'selected' : ''}}>Ditolak</option>
                                                         <option value="Menunggu" {{$keaktifan['status'] == 'Menunggu' ? 'selected' : ''}}>Menunggu</option>
                                                     </select>
                                                 </div>
                                                 
                                             </div>                                                                                            
-                                        </div>
-                                        <div class="modal-footer">
+                                        </div> --}}
+                                        {{-- <div class="modal-footer">
                                             <div class="d-flex justify-content-end">
                                                 <button type="submit"
                                                     class="btn btn-primary me-1 mb-1">Submit</button>
                                                 <button type="close"
                                                     class="btn btn-light-secondary me-1 mb-1" data-bs-dismiss="modal">Close</button>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </form>
                                 </div>
                             </div>

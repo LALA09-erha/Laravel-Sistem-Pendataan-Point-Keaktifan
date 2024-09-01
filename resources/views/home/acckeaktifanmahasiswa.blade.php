@@ -12,7 +12,7 @@
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/keaktifanmahasiswa">Keaktifan Mahasiswa</a></li>
+                        <li class="breadcrumb-item"><a href="/validasidatakeaktifan">Validasi Keaktifan Mahasiswa</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Detail Keaktifan Mahasiswa</li>
                     </ol>
                 </nav>
@@ -22,7 +22,7 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                <a href="/keaktifanmahasiswa" class="btn btn-primary">
+                <a href="/validasidatakeaktifan" class="btn btn-primary">
                     <i class="bi bi-arrow-left"></i>
                     Kembali
                 </a>

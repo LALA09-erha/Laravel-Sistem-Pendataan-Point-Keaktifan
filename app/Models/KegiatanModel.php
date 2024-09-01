@@ -20,9 +20,11 @@ class KegiatanModel extends Model
         'id',
         'nama_kegiatan',
         'kategori_kegiatan',
+        'subkategori_kegiatan',
         'kedudukan_kegiatan',
         'tingkat_kegiatan',
         'point_kegiatan',
+        'tahun_kegiatan'
     ];
 
     protected $primaryKey = 'id';

@@ -39,19 +39,56 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="semester">Semester</label>
-                        <input type="text" class="form-control" id="semester" name="semester" placeholder="Masukkan Semester Anda Pada Saat Kegiatan" required>                                                
-                    </div>  
+                        <label for="tanggal">Tanggal Kegiatan</label>
+                        <input type="date" class="form-control" id="tanggal" name="tanggal" placeholder="Masukkan Tanggal Anda Pada Saat Kegiatan" required>                                                
+                    </div>                 
 
                     <div class="form-group">
-                        <label for="kegiatan">Kegiatan</label>
-                        <select class="form-select" id="kegiatan" name="kegiatan" required>
-                            <option selected>Pilih Kegiatan</option>
-                            @foreach ($kegiatan as $kg)
-                            <option value="{{$kg['id']}}">{{$kg['nama_kegiatan']}} | {{$kg['kedudukan_kegiatan']}} | {{$kg['tingkat_kegiatan']}}</option>
+                        <label for="sub_kategori">Sub Kategori</label>
+                        <select class="form-select" id="sub_kategori" name="sub_kategori" required 
+                                onchange="updateKegiatanDiv(this.value)">
+                            <option value='null'>Pilih Sub Kegiatan</option>
+                            @foreach ($subkategori_kegiatan as $sub)
+                            <option value="{{$sub['nama_subkategori']}}">{{$sub['nama_subkategori']}}</option>                            
                             @endforeach
                         </select>
                     </div>
+                    
+                    @foreach ($temp_kegiatan as $key => $kegiatans)
+                        <div class="form-group kelas_kegiatan" id="kegiatan_div_{{$key}}" style="display: none">
+                            <label for="kegiatan">Kegiatan</label>
+                            <select class="form-select" id="kegiatan" name="kegiatan_{{$key}}">
+                                <option value='null'>Pilih Kegiatan</option>
+                                @foreach ($kegiatans as $keg)
+                                <option value="{{$keg}}">{{$keg}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endforeach
+                    
+                    @foreach ($temp_kedudukan as $key => $kedudukans)
+                        <div class="form-group kelas_kegiatan" id="kedudukan_div_{{$key}}" style="display: none">
+                            <label for="kedudukan">Kedudukan</label>
+                            <select class="form-select" id="kedudukan" name="kedudukan_{{$key}}">
+                                <option value='null'>Pilih Kedudukan</option>
+                                @foreach ($kedudukans as $ked)
+                                <option value="{{$ked}}">{{$ked}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endforeach
+                    
+                    @foreach ($temp_tingkatan as $key => $tingkatans)
+                        <div class="form-group kelas_kegiatan" id="tingkatan_div_{{$key}}" style="display: none">
+                            <label for="tingkatan">Tingkatan</label>
+                            <select class="form-select" id="tingkatan" name="tingkatan_{{$key}}">
+                                <option >Pilih Tingkatan</option>
+                                @foreach ($tingkatans as $ting)
+                                <option value="{{$ting}}">{{$ting}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endforeach
 
                     {{-- Submit --}}
                     <div class="form-group">
@@ -60,13 +97,37 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>
-
-                        
-                
-               
+                </form>                
             </div>
         </div>
 
     </section>
 </div>
 @endsection
+<script>
+    function updateKegiatanDiv(selectedValue) {
+        // Sembunyikan semua div kegiatan, kedudukan, dan tingkatan
+        document.querySelectorAll('.kelas_kegiatan').forEach(function(div) {
+            div.style.display = 'none';
+        });
+    
+        // Tampilkan div yang sesuai dengan nilai sub_kategori yang dipilih
+        var kegiatanDivId = 'kegiatan_div_' + selectedValue;
+        var kedudukanDivId = 'kedudukan_div_' + selectedValue;
+        var tingkatanDivId = 'tingkatan_div_' + selectedValue;
+    
+        var kegiatanDiv = document.getElementById(kegiatanDivId);
+        var kedudukanDiv = document.getElementById(kedudukanDivId);
+        var tingkatanDiv = document.getElementById(tingkatanDivId);
+    
+        if (kegiatanDiv) {
+            kegiatanDiv.style.display = 'block';
+        }
+        if (kedudukanDiv) {
+            kedudukanDiv.style.display = 'block';
+        }
+        if (tingkatanDiv) {
+            tingkatanDiv.style.display = 'block';
+        }
+    }
+    </script>

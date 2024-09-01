@@ -5,7 +5,9 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\UsersModel;
+use DateTime;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
@@ -51,12 +53,26 @@ class DatabaseSeeder extends Seeder
         DB::table('kedudukan_models')->insert([
             'nama_kedudukan' => '-',
         ]);
+        DB::table('subkategori_models')->insert([
+            'nama_subkategori' => 'Pembentukan karakter',
+        ]);
+        DB::table('subkategori_models')->insert([
+                'nama_subkategori' => 'Pengenalan Hidup Kampus',   
+        ]);
+        DB::table('subkategori_models')->insert([
+            'nama_subkategori' => 'Organisasi Kepemimpinan',
+        ]);
 
         DB::table('keaktifan_mahasiswa_models')->insert([
             'nim' => '201810370311003',
             'nama_mahasiswa' => 'Muhammad Fauzan',
-            'semester' => '2',
-            'data_kegiatan' => 'Lomba IT | Peserta',
+            'tanggal_kegiatan' => new DateTime(),
+            'data_kegiatan' => 'Lomba IT',
+            'kedudukan_kegiatan' => 'Ketua',
+            'tingkat_kegiatan' => 'Jurusan',
+            'subkategori_kegiatan' => 'pengenalan hidup kampus',
+            'tahun_kegiatan' => '2020',
+            'kategori_kegiatan' => 'Pilihan',
             'file_kegiatan' => 'lomba-it.pdf',
             'point_kegiatan' => 10,
             'status' => 'Menunggu',
@@ -64,14 +80,53 @@ class DatabaseSeeder extends Seeder
         DB::table('keaktifan_mahasiswa_models')->insert([
             'nim' => '201810370311003',
             'nama_mahasiswa' => 'Muhammad Fauzan',
-            'semester' => '3',
-            'data_kegiatan' => 'Lomba IT | Peserta',
+            'tanggal_kegiatan' => new DateTime(),
+            'data_kegiatan' => 'Lomba IT',
+            'kedudukan_kegiatan' => 'Wakil Ketua',
+            'tingkat_kegiatan' => 'Jurusan',
+            'subkategori_kegiatan' => 'pengenalan hidup kampus',
+            'tahun_kegiatan' => '2020',
+            'kategori_kegiatan' => 'Pilihan',
             'file_kegiatan' => 'lomba-it.pdf',
             'point_kegiatan' => 20,
             'status' => 'Menunggu',
         ]);
+        
+        DB::table('profil_ttd_models')->insert([
+            'nip' => '198301182008121001',
+            'nama' => ' Faikul Umam, S.T., M.T',
+            'jabatan' => 'Dekan Fakultas Teknik',
+            
+        ]);
 
-        // get 10 random users and assign them to random roles
-        // $users = UsersModel::inRandomOrder()->limit(10)->get();
+
+        DB::table('kegiatan_models')->insert([
+            'nama_kegiatan' => 'Lomba IT',
+            'kategori_kegiatan' => 'Pilihan',
+            'subkategori_kegiatan' => 'Pembentukan karakter',
+            'kedudukan_kegiatan' => 'Wakil Ketua',
+            'tingkat_kegiatan' => 'Jurusan',
+            'point_kegiatan' => 20,
+        ]);
+
+        DB::table('kegiatan_models')->insert([
+            'nama_kegiatan' => 'PKKMB',
+            'kategori_kegiatan' => 'Wajib',
+            'subkategori_kegiatan' => 'Pengenalan Hidup Kampus',
+            'kedudukan_kegiatan' => '-',
+            'tingkat_kegiatan' => 'Universitas/Kab/Kota',
+            'point_kegiatan' => 10,
+        ]);
+
+        DB::table('kegiatan_models')->insert([
+            'nama_kegiatan' => 'Keaktifitas Mahasiswa (UKM)',
+            'kategori_kegiatan' => 'Pilihan',
+            'subkategori_kegiatan' => 'Organisasi Kepemimpinan',
+            'kedudukan_kegiatan' => 'Ketua',
+            'tingkat_kegiatan' => 'Fakultas',
+            'point_kegiatan' => 20
+        ]);
+        
+
     }
 }

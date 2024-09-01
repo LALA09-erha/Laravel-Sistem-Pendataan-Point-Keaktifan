@@ -118,11 +118,29 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item {{
+                            $title=='Sub Kategori | Sistem Pendataan Keaktifan Mahasiswa' ? 'active' : ''
+                        }}">
+                            <a href="/kategori" class='sidebar-link'>
+                                <i class="bi bi-journal-text"></i>
+                                <span>Sub Kategori</span>
+                            </a>
+                        </li>
+                        
+                        <li class="sidebar-item {{
+                            $title=='Profil TTD Transkip | Sistem Pendataan Keaktifan Mahasiswa' ? 'active' : ''
+                        }}">
+                            <a href="/profilttd" class='sidebar-link'>
+                                <i class="bi bi-journal-text"></i>
+                                <span>Profil TTD Transkip</span>
+                            </a>
+                        </li>
+
 
                         @endif
                         {{-- END HALAMAN ADMIN --}}
 
-                        @if(session('user')['role'] == 'Admin' || session('user')['role'] == 'Mahasiswa')
+                        @if(session('user')['role'] == 'Mahasiswa')
 
                         {{-- Letter Archives --}}
                         <li class="sidebar-title">Menu Akademik</li>

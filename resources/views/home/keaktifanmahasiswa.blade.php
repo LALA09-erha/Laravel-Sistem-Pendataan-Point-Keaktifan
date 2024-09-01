@@ -29,7 +29,7 @@
                         <tr>
                             <th>NIM</th>
                             <th>Nama Mahasiswa</th>
-                            <th>Tahun Ajaran</th>  
+                            {{-- <th>Tahun Ajaran</th>   --}}
                             <th>Program Prodi</th>
                             <th>Total Point</th>
                             <th>Action</th>
@@ -41,7 +41,7 @@
                         <tr>
                             <td>{{$mahasiswa['nim']}}</td>
                             <td>{{$mahasiswa['name']}}</td>
-                            <td>{{$mahasiswa['tahun_ajaran']}}</td>
+                            {{-- <td>{{$mahasiswa['tahun_ajaran']}}</td> --}}
                             <td>{{$mahasiswa['prodi']}}</td>                            
                              <td>{{$mahasiswa['total_point']}}</td>
                             <td>

@@ -60,6 +60,15 @@ class AuthController extends Controller
         }
     }
 
+    // register view page
+    public function register(){
+        if(session('user')){
+            return redirect('/');
+        }else{
+            return view('auth.register', ['title' => 'Register | Sistem Pendataan Keaktifan Mahasiswa']);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -73,7 +82,39 @@ class AuthController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // tambahkan data mahasiswa ke database dengan model
+
+        try{
+            $mahasiswa = new MahasiswaModel();
+            
+            $data =[
+                'nim' => $request->nim,
+                'password' => Hash::make($request->password),
+                'role' => 'Mahasiswa',
+                'name' => $request->nama,
+                'email' => $request->email,
+                'prodi' => $request->prodi,
+                // 'tahun_ajaran' => $request->tahun_ajaran,
+                'total_point' => 0
+            ];
+
+            // mengecek apakah nim sudah terdaftar
+            $cek = MahasiswaModel::where('nim', $request->nim)->first();
+            if($cek){
+                return redirect('/register')->with('message', 'Data gagal ditambahkan');
+            }
+
+            // jika tidak, simpan data mahasiswa
+
+            $mahasiswa->insert($data);
+            return redirect('/login')->with('message', 'Data berhasil ditambahkan');
+
+        }catch(\Exception $e){
+            dd($e);
+            return redirect('/register')->with('message', 'Data gagal ditambahkan');
+        }
+        // redirect ke halaman login
+
     }
 
     /**

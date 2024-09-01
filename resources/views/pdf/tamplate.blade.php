@@ -145,7 +145,8 @@ footer {
   <body>
     <header class="clearfix">
       <div id="logo">
-        {{-- <img src="" alt=""> --}}
+        {{-- <img src="{{ public_path('file/UTM_DIKBUDRISTEK.png') }}" alt=""> --}}
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/UTM_DIKBUDRISTEK.png" alt="">
       </div>
       <h1>Universitas Trunojoyo Madura <br>Fakultas Teknik</h1>
       <h2 style="text-align:center">Transkip Point Mahasiswa</h2>

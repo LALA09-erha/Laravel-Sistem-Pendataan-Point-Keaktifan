@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('role');
-            $table->string('tahun_ajaran');
+            $table->string('tahun_ajaran')->nullable();
             $table->string('prodi');
             $table->integer('total_point')->default(0);
             $table->timestamps();

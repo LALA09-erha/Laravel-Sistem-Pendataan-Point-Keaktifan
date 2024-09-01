@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\KeaktifanMahasiswaModel;
 use App\Models\KegiatanModel;
 use App\Models\MahasiswaModel;
+use App\Models\ProfilTtdModel;
+use App\Models\SubkategoriModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\PDF;
+use Dompdf\Options;
+
 
 
 class KeaktifanMahasiswaController extends Controller
@@ -39,8 +43,11 @@ class KeaktifanMahasiswaController extends Controller
             if (session('user')['role'] == 'Mahasiswa') {
                 return redirect('login');
             } else {
-                // ambil model keaktifan mahasiswa dari database dengan status menunggu
+                // ambil model keaktifan mahasiswa dari database dengan status menunggu dengan data yang unique nim
                 $keaktifans = KeaktifanMahasiswaModel::where('status', 'Menunggu')->get();
+
+                $keaktifans = $keaktifans->unique('nim');
+                
                 return view('home.validasikeaktifanmahasiswa', ['title' => 'Validasi Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'keaktifans' => $keaktifans]);
             }
         }
@@ -53,12 +60,52 @@ class KeaktifanMahasiswaController extends Controller
         if (session('user') == null) {
             return redirect('login')->with('message', 'Silahkan login terlebih dahulu');
         } else {
-            if (session('user')['role'] == 'Dosen') {
+            if (session('user')['role'] == 'Dosen' || session('user')['role'] == 'Admin') {
                 return redirect('login');
             } else {
                 $data = session('user');
                 $kegiatan = KegiatanModel::all();
-                return view('home.uploaddatakeaktifan', ['title' => 'Upload Data Keaktifan  | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data, 'kegiatan' => $kegiatan]);
+
+                $subkategori_kegiatan = SubkategoriModel::all();
+
+                // inisialisasi objek Options  berdasarkan subkategori
+                $temp_kegiatan = (object) [];
+                $temp_kedudukan = (object) [];
+                $temp_tingkatan = (object) [];
+                foreach ($subkategori_kegiatan as $sub) {
+                    $temp1 = [];
+                    $temp2 = [];
+                    $temp3 = [];
+                    foreach ($kegiatan as $keg) {
+                        if ($sub->nama_subkategori == $keg->subkategori_kegiatan) {
+                            // masukkan data ke temp
+                            // sebelum dipush check apakah ada data di array
+                            if(!in_array($keg->nama_kegiatan, $temp1)){
+                                array_push($temp1, $keg->nama_kegiatan);       
+                            }
+
+
+                            if(!in_array($keg->kedudukan_kegiatan, $temp2)){
+                                array_push($temp2, $keg->kedudukan_kegiatan);                                
+                            }
+
+
+                            if(!in_array($keg->tingkat_kegiatan, $temp3)){
+                                array_push($temp3, $keg->tingkat_kegiatan);
+                            }
+
+                        }
+                    }
+                    $temp_kegiatan->{$sub->nama_subkategori} = $temp1;
+                    $temp_kedudukan->{$sub->nama_subkategori} = $temp2;
+                    $temp_tingkatan->{$sub->nama_subkategori} = $temp3;
+                }
+                
+                // inisialisasi objek keddukan berdasarkan subkategori
+
+                // dd($temp_kegiatan , $temp_kedudukan, $temp_tingkatan);
+                
+                return view('home.uploaddatakeaktifan', ['title' => 'Upload Data Keaktifan  | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data, 'temp_kegiatan' => $temp_kegiatan, 'temp_kedudukan' => $temp_kedudukan, 'temp_tingkatan' => $temp_tingkatan , 'subkategori_kegiatan' => $subkategori_kegiatan]);
             }
         }
     }
@@ -77,10 +124,22 @@ class KeaktifanMahasiswaController extends Controller
      */
     public function store(Request $request)
     {
+        $sub_kategori = $request->sub_kategori;
+
+        $sub_kategori_temp = str_replace(' ', '_', $sub_kategori);
+
+        $kegiatan_temp = $request['kegiatan_' . $sub_kategori_temp];
+
+        $kedudukan_temp = $request['kedudukan_' . $sub_kategori_temp];
+
+        $tingkat_temp = $request['tingkatan_' . $sub_kategori_temp];        
+
         try {
 
             // ambil data kegiatan berdasarkan id kegiatan
-            $data_kegiatan = KegiatanModel::where('id', $request->kegiatan)->get();
+            $data_kegiatan = KegiatanModel::where('nama_kegiatan', $kegiatan_temp)->where('subkategori_kegiatan', $sub_kategori)->where('kedudukan_kegiatan', $kedudukan_temp)->where('tingkat_kegiatan', $tingkat_temp)->get();
+
+            // dd($data_kegiatan);
 
             // nama mahasiswa
             $nama_mahasiswa = $request->nama;
@@ -88,14 +147,27 @@ class KeaktifanMahasiswaController extends Controller
             // nim
             $nim = $request->nim;
 
-            // semester
-            $semester = $request->semester;
+            // tanggal kegiatan
+            $tanggal = $request->tanggal;
 
             // point kegiatan
             $point_kegiatan = $data_kegiatan[0]->point_kegiatan;
 
             // nama kegiatan
-            $nama_kegiatan = $data_kegiatan[0]->nama_kegiatan . " | " . $data_kegiatan[0]->kedudukan_kegiatan . " | " . $data_kegiatan[0]->tingkat_kegiatan;
+            $nama_kegiatan = $data_kegiatan[0]->nama_kegiatan ;
+
+            // kategori kegiatan
+            $kategori_kegiatan = $data_kegiatan[0]->kategori_kegiatan;
+
+            // subkategori kegiatan
+            $subkategori_kegiatan = $data_kegiatan[0]->subkategori_kegiatan;
+
+            //kedudukan kegiatan
+            $kedudukan_kegiatan = $data_kegiatan[0]->kedudukan_kegiatan;
+
+            // tingkat kegiatan
+            $tingkat_kegiatan = $data_kegiatan[0]->tingkat_kegiatan;
+             
 
             // nama file
             $nama_file = $nim . "." . date('Y.m.d.H.i.s') . "." . $request->file('file')->extension();
@@ -113,13 +185,16 @@ class KeaktifanMahasiswaController extends Controller
             $data = [
                 'nama_mahasiswa' => $nama_mahasiswa,
                 'nim' => $nim,
-                'semester' => $semester,
+                'tanggal_kegiatan' => $tanggal,
                 'data_kegiatan' => $nama_kegiatan,
+                'kedudukan_kegiatan' => $kedudukan_kegiatan,
+                'tingkat_kegiatan' => $tingkat_kegiatan,
+                'kategori_kegiatan' => $kategori_kegiatan,
+                'subkategori_kegiatan' => $subkategori_kegiatan,
                 'file_kegiatan' => $nama_file,
                 'point_kegiatan' => $point_kegiatan,
                 'status' => 'Menunggu'
             ];
-
             // masukkan data keaktifan mahasiswa ke database
             KeaktifanMahasiswaModel::create($data);
 
@@ -127,6 +202,7 @@ class KeaktifanMahasiswaController extends Controller
 
             return redirect('/transkippointkeaktifan')->with('message', 'Data berhasil diupload');
         } catch (\Throwable $th) {
+            dd($th) ;
             return redirect()->back()->with('error', 'Data gagal diupload');
         }
     }
@@ -141,6 +217,13 @@ class KeaktifanMahasiswaController extends Controller
         $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->get();
         $data = MahasiswaModel::find($id);
         return view('home.detailkeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Detail Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
+    }
+    public function acc_validasi(string $id)
+    {
+        // ambil semua data keaktifan mahasiswa berdasarkan nim  mahasiswa dan data yang belum di validasi
+        $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->where('status', 'Menunggu')->get();
+        $data = MahasiswaModel::find($id);
+        return view('home.acckeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Validasi Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
     }
 
     /**
@@ -207,7 +290,7 @@ class KeaktifanMahasiswaController extends Controller
         if (session('user') == null) {
             return redirect('login')->with('message', 'Silahkan login terlebih dahulu');
         } else {
-            if (session('user')['role'] != 'Admin' && session('user')['role'] != 'Mahasiswa') {
+            if (session('user')['role'] != 'Mahasiswa') {
                 return redirect('login');
             } else {
                 // ambil semua data mahasiswa di keaktifan mahasiswa model berdasarkan nim/nip yang disetujui
@@ -228,19 +311,186 @@ class KeaktifanMahasiswaController extends Controller
     // download data keaktifan mahasiswa yang sudah disetujui oleh admin menjadi file pdf
     public function download(Request $request)
     {
+        // sebelum data siap
+        //    tampilkan web tulisan "Tunggu sebentar, Halaman sedang dalam proses dan akan dialihkan otomatis"
+        
+
+
+
         $nim = $request->nim;
         $data = MahasiswaModel::where('nim', $nim)->get()[0];
-
         $mahasiswa = KeaktifanMahasiswaModel::where('nim', $nim)->where('status', 'Disetujui')->get();
 
+        $datattd = ProfilTtdModel::all();
 
+        // buatkan data yang unik di sub kategori keaktifan mahasiswa dan kategori pilihan
+        $data_unik = [];
+        
+        
+        foreach ($mahasiswa as $key => $value) {
+            if(!in_array($value->subkategori_kegiatan, $data_unik)&& $value->kategori_kegiatan == "Pilihan") {
+                $data_unik[] = $value->subkategori_kegiatan;
+            }
+        }
 
-        $pdf = PDF::loadview('pdf.tamplate', ['mahasiswa' => $mahasiswa, 'data' => $data])->setPaper('a4', 'landscape')->setWarnings(true)->setOptions(['isPhpEnabled' => true]);
+      
+        $fix ='';
+        foreach ($data_unik as $keyy => $valuee) {
+            $fix .= '<tr>
+            <td colspan="5" class="center-text">
+            <strong>'.strtoupper($valuee).'</strong>
+            </td>
+            </tr>';
+            $index =1;
+            foreach ($mahasiswa as $key => $value) {
+                if ($valuee == $value->subkategori_kegiatan && $value->kategori_kegiatan == "Pilihan") {
+                    $fix .= '<tr>
+                    
+                    <td>'.
+                    $index.
+                    '</td>
+                    <td>'.
+                    $value->data_kegiatan
+                    .'</td>
+                    <td>'
+                    .$value->kedudukan_kegiatan
+                    .'</td>
+                    <td>'
+                    .$value->tingkat_kegiatan.'</td>
+                    <td>'.$value->point_kegiatan.'</td>
+                    </tr>';                 
+                    
+                    $index++;
+                }               
+                
+            }                
+        }
+        // dd($fix);
+        $html = '
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Satuan Kredit Prestasi Mahasiswa</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                table, th, td {
+                    border: 1px solid black;
+                }
+                th, td {
+                    padding: 8px;
+                    text-align: left;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+                .no-border {
+                    border: none;
+                }
+                .header {
+                    text-align: center;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                }
+                .center-text {
+                    text-align: center;
+                }
+                .footer {
+                    margin-top: 30px;
+                    text-align: right;
+                    font-weight: bold;
+                }
+                
+            </style>
+        </head>
+        <body>
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/UTM_DIKBUDRISTEK.png" alt="Logo UTM" width="100px" style="display: block; margin: 0 auto; align-content: center; margin-bottom: 20px; justify-content: center; ">
+            <br>Universitas Trunojoyo Madura <br>
+            Satuan Kredit Prestasi Mahasiswa Trunojoyo Madura
+        </div>
 
+        <div>Nama &emsp; &emsp; &emsp; &emsp; &nbsp;: ' . $data->name . '</div>
+        <div>NIM &emsp; &emsp; &emsp; &emsp; &emsp; : ' . $data->nim . '</div>
+        <div>Program Studi &emsp; : ' . $data->prodi . '</div>
+        <div>Fakultas &emsp; &emsp; &emsp;  &nbsp;: Teknik</div>
 
-        return $pdf->download($nim . "." . date('h.m.s') . '.pdf');
+        <br>
 
-        // return view('pdf.tamplate', ['mahasiswa' => $mahasiswa, 'data' => $data]);
+        <table>
+            <tr>
+                <th>No</th>
+                <th>Kegiatan</th>
+                <th>Kedudukan</th>
+                <th>Tingkatan</th>
+                <th>Poin</th>
+            </tr>
+            <tr>
+                <td colspan="5" class="center-text"><strong>KEGIATAN WAJIB</strong></td>
+            </tr>
+            <tr>
+                <td colspan="5" class="center-text"><strong>PENGENALAN KEHIDUPAN KAMPUS</strong></td>
+            </tr>
+            '. 
+            $mahasiswa->map(function ($item, $key) {
+                if($item->kategori_kegiatan == 'Wajib'){
+                    return '
+                    <tr>
+                        <td>'. ($key) .'</td>
+                        <td>'.$item->data_kegiatan.'</td>
+                        <td>'.$item->kedudukan_kegiatan.'</td>
+                        <td>'.$item->tingkat_kegiatan.'</td>
+                        <td>'.$item->point_kegiatan.'</td>
+                    </tr>
+                    ';                    
+                }
+            })->implode('')
+            .'
+           
+            <tr>
+                <td colspan="5" class="center-text"><strong>KEGIATAN PILIHAN</strong></td>
+            </tr>
+            '.
+            $fix 
+            .'            
+            <tr>
+                <td colspan="4" class="center-text"><strong>Total Poin</strong></td>
+                <td>'. $data->total_point . '</td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            Bangkalan, ' . date('d F Y') . '<br>
+            '. $datattd[0]->jabatan.'
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            '. $datattd[0]->nama .' <br>
+            NIP: '. $datattd[0]->nip . '
+        </div>
+
+        </body>
+        </html>
+        ';
+        $mpdf = new \Mpdf\Mpdf();
+        
+        $mpdf->WriteHTML($html);
+        // $mpdf->Output();
+
+        //download file
+        $namefile =  $nim.now().'.pdf';
+        $mpdf->Output($namefile, 'D');
+ 
     }
 
 
@@ -274,5 +524,49 @@ class KeaktifanMahasiswaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function profilttd(Request $request)
+    {   
+        try{
+            // jika bukan Admin
+            if(session('user')['role'] == 'Admin'){
+                $data = ProfilTtdModel::all();
+                return view('home.profilttd', [
+                    'data' => $data , 'title' => 'Profil TTD Transkip | Sistem Pendataan Keaktifan Mahasiswa'
+                ]);
+            }else{
+                return redirect('/');
+            }
+
+        }catch(\Throwable $th){
+            // to /
+            return redirect('/');
+        }
+    }
+
+    public function editprofilttd(Request $request )
+    {
+
+        $data = ProfilTtdModel::where('id', $request->id)->get();
+
+        // dd($data[0],$request->all());
+
+        if(count($data) > 0){
+            // jika tidak ada yang berubah maka return false
+            if($data[0]->nama == $request->nama && $data[0]->nip == $request->nip && $data[0]->jabatan == $request->jabatan){
+                return redirect('/profilttd')->with('error', 'Data tidak berubah');
+            }else{
+                ProfilTtdModel::where('id', $request->id)->update([
+                    'nama' => $request->nama,
+                    'nip' => $request->nip,
+                    'jabatan' => $request->jabatan
+                ]);
+                return redirect('/profilttd')->with('message', 'Data berhasil dirubah');
+            }
+        }else{
+            return redirect('/profilttd')->with('error', 'Data gagal dirubah');
+        }
+
     }
 }

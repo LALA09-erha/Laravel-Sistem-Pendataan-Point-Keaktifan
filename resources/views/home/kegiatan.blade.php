@@ -70,6 +70,15 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                        <label for="kdudukan-id-icon">Sub Kategori Kegiatan</label>
+                                        <div class="position-relative">
+                                            {{-- dropdown kedudukan ambil dari $kedudukan --}}
+                                            <select class="form-select" name="subkategori_kegiatan" id="kdudukan-id-icon" required>
+                                                @foreach ($subkategoris as $subkategori)
+                                                    <option value="{{$subkategori['nama_subkategori']}}">{{$subkategori['nama_subkategori']}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                         {{-- dropdown tingkat kegiatan  prodi,fakultas,univ/kab/kota, prov/regional, nasional, internasional--}}
                                         <label for="kdudukan-id-icon">Tingkat Kegiatan</label>
                                         <div class="position-relative">
@@ -91,6 +100,14 @@
                                                 <i class="bi bi-pencil"></i>        
                                             </div>                                     
                                         </div>
+                                        {{-- <label for="point-id-icon">Tahun Kegiatan</label>
+                                        <div class="position-relative">
+                                            <input type="number" class="form-control" name="tahun_kegiatan"
+                                                placeholder="Tahun Kegiatan" id="point-id-icon" required>
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-clock"></i>        
+                                            </div>                                     
+                                        </div> --}}
                                     </div>                                                                                            
                                 </div>
                                 <div class="modal-footer">
@@ -113,9 +130,11 @@
                             <th>ID</th>
                             <th>Kegiatan Mahasiswa</th> 
                             <th>Kategori Kegiatan</th>    
+                            <th>Sub Kategori Kegiatan</th>
                             <th>Kedudukan Kegiatan</th>
                             <th>Tingkat Kegiatan</th>
                             <th>Point Kegiatan</th>
+                            {{-- <th>Tahun Kegiatan</th> --}}
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -129,9 +148,11 @@
                             <td>{{$index++}}</td>
                             <td>{{$kegiatan['nama_kegiatan']}}</td>
                             <td>{{$kegiatan['kategori_kegiatan']}}</td>
+                            <td>{{$kegiatan['subkategori_kegiatan']}}</td>
                             <td>{{$kegiatan['kedudukan_kegiatan']}}</td>
                             <td>{{$kegiatan['tingkat_kegiatan']}}</td>
                             <td>{{$kegiatan['point_kegiatan']}}</td>
+                            {{-- <td>{{$kegiatan['tahun_kegiatan']}}</td> --}}
                             <td>
                                 <button data-bs-target="#kegiatanedit{{$kegiatan['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
                                 <button data-bs-target="#delete{{$kegiatan['id']}}" data-bs-toggle="modal" class="btn btn-danger">Delete</button>
@@ -217,7 +238,16 @@
                                                             <option value="{{$kedudukan['nama_kedudukan']}}" {{$kegiatan['kedudukan_kegiatan']==$kedudukan['nama_kedudukan']?'selected':''}}>{{$kedudukan['nama_kedudukan']}}</option>
                                                         @endforeach
                                                     </select>
-                                                                                                    </div>  
+                                                </div>  
+                                                {{-- sub kategori kegiatan --}}
+                                                <div class="position-relative">
+                                                    <label for="kdudukan-id-icon">Sub Kategori Kegiatan</label>
+                                                    <select class="form-select" name="subkategori_kegiatan" id="kdudukan-id-icon" required>
+                                                        @foreach ($subkategoris as $subktgr)
+                                                            <option value="{{$subktgr['nama_subkategori']}}" {{$kegiatan['subkategori_kegiatan']==$subktgr['nama_subkategori']?'selected':''}}>{{$subktgr['nama_subkategori']}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>  
                                                 {{-- tingkat kegiatan --}}
                                                 <div class="position-relative">
                                                     <label for="kdudukan-id-icon">Tingkat Kegiatan</label>
@@ -241,6 +271,14 @@
                                                         <i class="bi bi-pencil"></i>
                                                     </div>
                                                 </div>
+                                                {{-- <div class="position-relative">
+                                                    <label for="point-id-icon">Tahun Kegiatan</label>
+                                                    <input type="number" class="form-control" name="tahun_kegiatan"
+                                                        placeholder="Tahun Kegiatan" id="point-id-icon" value="{{$kegiatan['tahun_kegiatan']}}" required>
+                                                    <div class="form-control-icon">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </div>
+                                                </div> --}}
                                             </div>                                                                                            
                                         </div>
                                         <div class="modal-footer">

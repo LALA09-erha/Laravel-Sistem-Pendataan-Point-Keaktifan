@@ -16,5 +16,6 @@
 ### Buka Terminal dan lakukan perintah - perintah dibawah:
 
 1. composer require barryvdh/laravel-dompdf
-2. php artisan migrate:refresh --seed
-3. php artisan serve
+1. composer require mpdf/mpdf
+1. php artisan migrate:refresh --seed
+1. php artisan serve

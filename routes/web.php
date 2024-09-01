@@ -8,7 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KeaktifanMahasiswaController;
 use App\Http\Controllers\KedudukanController;
 use App\Http\Controllers\KegiatanController;
-
+use App\Http\Controllers\SubkategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,9 +28,14 @@ Route::get('/login', [AuthController::class, 'index'])->name('login');
 // process login
 Route::post('/prosesLogin', [AuthController::class, 'proseslogin']);
 
+// View register page
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+
+// process register
+Route::post('/prosesregist', [AuthController::class, 'store']);
+
 // logout
 Route::post('/logout', [AuthController::class, 'destroy']);
-
 
 // Homepages routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -46,6 +51,18 @@ Route::post('/editkedudukan', [KedudukanController::class, 'update'])->name('edi
 
 // proses hapus jenis kedudukan
 Route::post('/deletekedudukan', [KedudukanController::class, 'destroy'])->name('hapus-kedudukan');
+
+// view kategori
+Route::get('/kategori ', [SubkategoriController::class, 'index'])->name('kategorimahasiswa');
+
+//proses tambah kategori
+Route::post('/tambahsubkategori', [SubkategoriController::class, 'store'])->name('tambah-kategori');
+
+//edit sub kategori
+Route::post('/editsubkategori', [SubkategoriController::class, 'edit'])->name('edit-kategori');
+
+// hapus sub kategori
+Route::post('/deletesubkategori', [SubkategoriController::class, 'destroy'])->name('hapus-kategori');
 
 // view jenis kegiatan
 Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('jenis-kegiatan');
@@ -64,6 +81,9 @@ Route::get('/keaktifanmahasiswa', [KeaktifanMahasiswaController::class, 'index']
 
 // detail keaktifan mahasiswa
 Route::get('/keaktifanmahasiswa/detail/{id}', [KeaktifanMahasiswaController::class, 'show'])->name('detail-keaktifan-mahasiswa');
+
+// validasi keaktifan mahasiswa
+Route::get('/keaktifanmahasiswa/validasi/{id}', [KeaktifanMahasiswaController::class, 'acc_validasi'])->name('validasi-keaktifan-mahasiswa');
 
 // edit detail keaktifan mahasiswa
 Route::post('/editdetailkeaktifan', [KeaktifanMahasiswaController::class, 'edit'])->name('edit-keaktifan-mahasiswa');
@@ -85,3 +105,9 @@ Route::post('/uploadpoint', [KeaktifanMahasiswaController::class, 'store'])->nam
 
 // melihat file upload
 Route::get('/filekegiatan/{file}', [KeaktifanMahasiswaController::class, 'showfile'])->name('file-upload');
+
+// view profilttd
+Route::get('/profilttd', [KeaktifanMahasiswaController::class, 'profilttd'])->name('profil');
+
+// proses edit profil ttd
+Route::post('/editprofilttd', [KeaktifanMahasiswaController::class, 'editprofilttd'])->name('edit-profil-ttd');

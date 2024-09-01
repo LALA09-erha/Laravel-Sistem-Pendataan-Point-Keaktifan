@@ -15,8 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('nama_mahasiswa');
             $table->string('nim');
-            $table->string('semester');
+            $table->date('tanggal_kegiatan');
             $table->string('data_kegiatan');
+            $table->string('kedudukan_kegiatan');
+            $table->string('tingkat_kegiatan');
+            $table->string('kategori_kegiatan');
+            $table->string('subkategori_kegiatan');
+            $table->string('tahun_kegiatan')->nullable();
             $table->string('file_kegiatan');
             $table->string('point_kegiatan');
             $table->string('status');

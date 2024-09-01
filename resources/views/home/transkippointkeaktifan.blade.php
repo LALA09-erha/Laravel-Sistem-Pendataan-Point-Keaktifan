@@ -1,6 +1,7 @@
 @extends('home/tamplate')
     
 @section('content')
+ 
 
 <div class="page-heading">
     <div class="page-title">
@@ -28,13 +29,14 @@
                 <form action="/downloadtranskippointkeaktifan" method="post">
                     @csrf
                     <input type="hidden" name="nim" value="{{$nim}}">
-                    <button
+                    <button onclick="startLoader(alert('Tunggu Sebentar, Halaman akan Otomatis Refresh'))"
                     @if($mahasiswa == null || count($mahasiswa) == 0)
                         disabled
                     @endif
-                    class="btn btn-primary" name="download" value="download" type="submit"><i class="bi bi-download"></i> Download Transkip Point</button>                     
+                    class="btn btn-primary" name="download" value="download" type="submit"><i class="bi bi-download" id="transkipbutton" ></i> Download Transkip Point</button>                     
                 </form>          
             </div>
+            
             <div class="card-body">
                 @if($mahasiswa == null || count($mahasiswa) == 0)
                         {{-- jika data mahasiswa kosong --}}
@@ -48,10 +50,13 @@
                         <tr>
                             <th>NIM</th>
                             <th>Nama Mahasiswa</th>
-                            <th>Semester</th>  
-                            <th>Kegiatan | Kedudukan</th>
-                            {{-- <th>Point Kegiatan</th>
-                            <th>Bukti File Kegiatan</th> --}}
+                               
+                            <th>Kegiatan</th>
+                            <th>Kedudukan</th>
+                            <th>Tingkat Kegiatan</th>
+                            <th>Kategori</th>
+                            <th>Sub Kategori</th>
+                            <th>Tanggal Kegiatan</th>                            
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -61,10 +66,12 @@
                         <tr>
                             <td>{{$mhs['nim']}}</td>
                             <td>{{$mhs['nama_mahasiswa']}}</td>
-                            <td>{{$mhs['semester']}}</td>
-                            <td>{{$mhs['data_kegiatan']}}</td>                            
-                             {{-- <td>{{$mhs['point_kegiatan']}}</td>
-                             <td>{{$mhs['file_kegiatan']}}</td> --}}
+                             <td>{{$mhs['data_kegiatan']}}</td>                            
+                             <td>{{$mhs['kedudukan_kegiatan']}}</td>
+                             <td>{{$mhs['tingkat_kegiatan']}}</td>
+                             <td>{{$mhs['kategori_kegiatan']}}</td>
+                             <td>{{$mhs['subkategori_kegiatan']}}</td>       
+                             <td>{{$mhs['tanggal_kegiatan']}}</td>                      
                              <td>{{$mhs['status']}}</td>
                         </tr>
                         @endforeach                    
@@ -76,4 +83,5 @@
 
     </section>
 </div>
+
 @endsection
