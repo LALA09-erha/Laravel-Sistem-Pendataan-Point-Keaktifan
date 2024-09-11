@@ -155,7 +155,7 @@
                             {{-- <td>{{$kegiatan['tahun_kegiatan']}}</td> --}}
                             <td>
                                 <button data-bs-target="#kegiatanedit{{$kegiatan['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
-                                <button data-bs-target="#delete{{$kegiatan['id']}}" data-bs-toggle="modal" class="btn btn-danger">Delete</button>
+                                <button data-bs-target="#delete{{$kegiatan['id']}}" data-bs-toggle="modal" class="btn btn-danger" {{$kegiatan['subkategori_kegiatan'] == "Lainnya" ? 'disabled' : '' }}>Delete</button>
                             </td>
                         </tr>
                         <div class="modal fade text-left" id="delete{{$kegiatan['id']}}" tabindex="-1"
@@ -225,7 +225,7 @@
                                                 <div class="position-relative">
                                                     {{-- dropdown kategori kegiatan --}}
                                                     <label for="test-id-icon">Kategori Kegiatan</label>
-                                                    <select class="form-select" name="kategori_kegiatan" id="test-id-icon" required>
+                                                    <select class="form-select" name="kategori_kegiatan" id="test-id-icon" required >
                                                         <option value="Wajib" {{$kegiatan['kategori_kegiatan']=='Wajib'?'selected':''}}>Wajib</option>
                                                         <option value="Pilihan" {{$kegiatan['kategori_kegiatan']=='Pilihan'?'selected':''}}>Pilihan</option>
                                                     </select>

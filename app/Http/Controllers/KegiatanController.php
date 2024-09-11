@@ -51,7 +51,6 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
 
-        // dd($request->all());
         if (!session('user')) {
             return redirect('/login');
         }
@@ -67,25 +66,41 @@ class KegiatanController extends Controller
 
             ]);
 
-            // create new KegiatanModel object
-            $kegiatan = new KegiatanModel;
-
-            // set object properties
-            $kegiatan->nama_kegiatan = $request->nama_kegiatan;
-            $kegiatan->kategori_kegiatan = $request->kategori_kegiatan;
-            $kegiatan->subkategori_kegiatan = $request->subkategori_kegiatan;
-            $kegiatan->kedudukan_kegiatan = $request->kedudukan_kegiatan;
-            $kegiatan->point_kegiatan = $request->point_kegiatan;
-            $kegiatan->tingkat_kegiatan = $request->tingkat_kegiatan;
-            $kegiatan->tahun_kegiatan = null;
+            
 
 
+            $data = [
+             'nama_kegiatan' => $request->nama_kegiatan,
+            'kategori_kegiatan' => $request->kategori_kegiatan,
+            'subkategori_kegiatan' => $request->subkategori_kegiatan,
+            'kedudukan_kegiatan' => $request->kedudukan_kegiatan,
+            'point_kegiatan' => $request->point_kegiatan,
+            'tingkat_kegiatan' => $request->tingkat_kegiatan,
+            'tahun_kegiatan' => null
+            ];
 
-            // save object
-            $kegiatan->save();
+            if($request->subkategori_kegiatan == 'Lainnya'){
+                $data_kegiatan = KegiatanModel::where('subkategori_kegiatan', $request->subkategori_kegiatan)->get();
+                if ($data_kegiatan->count() > 0) {
+                    // if data already exists, redirect to kegiatan page
+                    return redirect('/kegiatan')->with('message', 'Kegiatan sudah ada');
+                }
+            }
 
-            // redirect to kegiatan page
-            return redirect('/kegiatan')->with('message', 'Kegiatan berhasil ditambahkan');
+            
+            // checkk if data already exists
+            $data_kegiatan = KegiatanModel::where('nama_kegiatan', $request->nama_kegiatan)->where('subkategori_kegiatan', $request->subkategori_kegiatan)->where('kedudukan_kegiatan', $request->kedudukan_kegiatan)->where('tingkat_kegiatan', $request->tingkat_kegiatan)->get();
+            if ($data_kegiatan->count() > 0) {
+                // if data already exists, redirect to kegiatan page
+                return redirect('/kegiatan')->with('message', 'Kegiatan sudah ada');
+            }else{
+                // if data does not exist, insert data
+                $kegiatan = KegiatanModel::create($data);
+
+                // redirect to kegiatan page
+                return redirect('/kegiatan')->with('message', 'Kegiatan berhasil ditambahkan');
+
+            }
         } else {
             // if user is not logged in, redirect to login page
             return redirect('/login')->with('message', 'Silahkan login terlebih dahulu');
@@ -123,13 +138,19 @@ class KegiatanController extends Controller
         $tingkat_kegiatan = $request->tingkat_kegiatan;
         $tahun_kegiatan = null;
 
+        
         // check apakah ada yang berubah dari data kegiatan berdasarkan id
         $kegiatan = KegiatanModel::where('id', $id)->first();
         if ($kegiatan->nama_kegiatan == $nama_kegiatan && $kegiatan->kategori_kegiatan == $kategori_kegiatan && $kegiatan->kedudukan_kegiatan == $kedudukan_kegiatan && $kegiatan->point_kegiatan == $point_kegiatan && $kegiatan->tingkat_kegiatan == $tingkat_kegiatan && $kegiatan->subkategori_kegiatan == $subkategori_kegiatan && $kegiatan->tahun_kegiatan == $tahun_kegiatan) {
             // jika tidak ada yang berubah, redirect ke halaman kegiatan
             return redirect('/kegiatan')->with('message', 'Tidak ada data yang berubah');
         } else {
-            // jika ada yang berubah, update data kegiatan
+            if($kegiatan->subkategori_kegiatan == 'Lainnya'){
+                KegiatanModel::where('id', $id)->update([
+                    'point_kegiatan' => $point_kegiatan,
+                ]);
+            }else{
+                // jika ada yang berubah, update data kegiatan
             KegiatanModel::where('id', $id)->update([
                 'nama_kegiatan' => $nama_kegiatan,
                 'kategori_kegiatan' => $kategori_kegiatan,
@@ -139,7 +160,7 @@ class KegiatanController extends Controller
                 'tingkat_kegiatan' => $tingkat_kegiatan,
                 'tahun_kegiatan' => $tahun_kegiatan
             ]);
-
+            }                  
             // redirect ke halaman kegiatan
             return redirect('/kegiatan')->with('message', 'Kegiatan berhasil diubah');
         }

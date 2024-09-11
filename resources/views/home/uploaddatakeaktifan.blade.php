@@ -57,36 +57,48 @@
                     @foreach ($temp_kegiatan as $key => $kegiatans)
                         <div class="form-group kelas_kegiatan" id="kegiatan_div_{{$key}}" style="display: none">
                             <label for="kegiatan">Kegiatan</label>
+                            @if (count($kegiatans) == 1 && $key == "Lainnya")
+                                <input type="text" class="form-control" id="kegiatan" name="kegiatan_{{$key}}" placeholder="Masukkan Kegiatan Anda" required>
+                            @else
                             <select class="form-select" id="kegiatan" name="kegiatan_{{$key}}">
                                 <option value='null'>Pilih Kegiatan</option>
                                 @foreach ($kegiatans as $keg)
                                 <option value="{{$keg}}">{{$keg}}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </div>
                     @endforeach
                     
                     @foreach ($temp_kedudukan as $key => $kedudukans)
                         <div class="form-group kelas_kegiatan" id="kedudukan_div_{{$key}}" style="display: none">
                             <label for="kedudukan">Kedudukan</label>
+                            @if (count($kedudukans) == 1 && $key == "Lainnya")
+                                <input type="text" class="form-control" id="kedudukan" name="kedudukan_{{$key}}" placeholder="Masukkan Kedudukan Anda" required>
+                            @else
                             <select class="form-select" id="kedudukan" name="kedudukan_{{$key}}">
                                 <option value='null'>Pilih Kedudukan</option>
                                 @foreach ($kedudukans as $ked)
                                 <option value="{{$ked}}">{{$ked}}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </div>
                     @endforeach
                     
                     @foreach ($temp_tingkatan as $key => $tingkatans)
                         <div class="form-group kelas_kegiatan" id="tingkatan_div_{{$key}}" style="display: none">
                             <label for="tingkatan">Tingkatan</label>
+                            @if (count($tingkatans) == 1 && $key == "Lainnya")
+                                <input type="text" class="form-control" id="tingkatan" name="tingkatan_{{$key}}" placeholder="Masukkan Tingkatan Anda" required>
+                            @else
                             <select class="form-select" id="tingkatan" name="tingkatan_{{$key}}">
                                 <option >Pilih Tingkatan</option>
                                 @foreach ($tingkatans as $ting)
                                 <option value="{{$ting}}">{{$ting}}</option>
                                 @endforeach
                             </select>
+                            @endif
                         </div>
                     @endforeach
 

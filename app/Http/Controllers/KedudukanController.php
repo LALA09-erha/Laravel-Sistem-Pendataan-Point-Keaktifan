@@ -38,7 +38,6 @@ class KedudukanController extends Controller
      */
     public function store(Request $request)
     {
-        // validate the data
         $request->validate([
             'nama_kedudukan' => 'required',
         ]);

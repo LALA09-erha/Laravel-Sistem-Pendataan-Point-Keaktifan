@@ -87,8 +87,8 @@
                             <td>{{$index++}}</td>
                             <td>{{$subkategori['nama_subkategori']}}</td>
                             <td>
-                                <button data-bs-target="#inlineForm{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
-                                <button data-bs-target="#delete{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-danger">Delete</button>
+                                <button data-bs-target="#inlineForm{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-primary" {{$subkategori['nama_subkategori'] == "Lainnya" ? 'disabled' : '' }}>Edit</button>
+                                <button data-bs-target="#delete{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-danger" {{$subkategori['nama_subkategori'] == "Lainnya" ? 'disabled' : '' }}>Delete</button>
                             </td>
                         </tr>
                         <div class="modal fade text-left" id="delete{{$subkategori['id']}}" tabindex="-1"

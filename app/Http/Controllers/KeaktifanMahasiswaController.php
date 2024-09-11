@@ -11,8 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\PDF;
 use Dompdf\Options;
-
-
+use LengthException;
 
 class KeaktifanMahasiswaController extends Controller
 {
@@ -100,8 +99,8 @@ class KeaktifanMahasiswaController extends Controller
                     $temp_kedudukan->{$sub->nama_subkategori} = $temp2;
                     $temp_tingkatan->{$sub->nama_subkategori} = $temp3;
                 }
-                
-                // inisialisasi objek keddukan berdasarkan subkategori
+
+                // dd(gettype($temp_kedudukan));
 
                 // dd($temp_kegiatan , $temp_kedudukan, $temp_tingkatan);
                 
@@ -124,6 +123,7 @@ class KeaktifanMahasiswaController extends Controller
      */
     public function store(Request $request)
     {
+        
         $sub_kategori = $request->sub_kategori;
 
         $sub_kategori_temp = str_replace(' ', '_', $sub_kategori);
@@ -134,12 +134,45 @@ class KeaktifanMahasiswaController extends Controller
 
         $tingkat_temp = $request['tingkatan_' . $sub_kategori_temp];        
 
+        // dd($sub_kategori, $sub_kategori_temp, $kegiatan_temp, $kedudukan_temp, $tingkat_temp);
+
         try {
 
-            // ambil data kegiatan berdasarkan id kegiatan
-            $data_kegiatan = KegiatanModel::where('nama_kegiatan', $kegiatan_temp)->where('subkategori_kegiatan', $sub_kategori)->where('kedudukan_kegiatan', $kedudukan_temp)->where('tingkat_kegiatan', $tingkat_temp)->get();
+            if($sub_kategori == 'Lainnya'){
+                $data_kegiatan = KegiatanModel::where('subkategori_kegiatan', $sub_kategori)->get();
 
-            // dd($data_kegiatan);
+                // nama mahasiswa
+            $nama_mahasiswa = $request->nama;
+
+            // nim
+            $nim = $request->nim;
+
+            // tanggal kegiatan
+            $tanggal = $request->tanggal;
+
+            // point kegiatan
+            $point_kegiatan = $data_kegiatan[0]->point_kegiatan;
+
+            // nama kegiatan
+            $nama_kegiatan =  $kegiatan_temp;
+
+            // kategori kegiatan
+            $kategori_kegiatan = $data_kegiatan[0]->kategori_kegiatan;
+
+            // subkategori kegiatan
+            $subkategori_kegiatan = $sub_kategori;
+
+            //kedudukan kegiatan
+            $kedudukan_kegiatan = $kedudukan_temp;
+
+            // tingkat kegiatan
+            $tingkat_kegiatan = $tingkat_temp;
+
+
+            }else{
+                // ambil data kegiatan berdasarkan id kegiatan
+            $data_kegiatan = KegiatanModel::where('nama_kegiatan', $kegiatan_temp)->where('subkategori_kegiatan', $sub_kategori)->where('kedudukan_kegiatan', $kedudukan_temp)->where('tingkat_kegiatan', $tingkat_temp)->get();
+            
 
             // nama mahasiswa
             $nama_mahasiswa = $request->nama;
@@ -167,7 +200,8 @@ class KeaktifanMahasiswaController extends Controller
 
             // tingkat kegiatan
             $tingkat_kegiatan = $data_kegiatan[0]->tingkat_kegiatan;
-             
+                
+            }        
 
             // nama file
             $nama_file = $nim . "." . date('Y.m.d.H.i.s') . "." . $request->file('file')->extension();
@@ -202,7 +236,7 @@ class KeaktifanMahasiswaController extends Controller
 
             return redirect('/transkippointkeaktifan')->with('message', 'Data berhasil diupload');
         } catch (\Throwable $th) {
-            dd($th) ;
+            // dd($th) ;
             return redirect()->back()->with('error', 'Data gagal diupload');
         }
     }

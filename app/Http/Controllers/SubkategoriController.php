@@ -41,12 +41,13 @@ class SubkategoriController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // check apakah ada sub kategori yang sama
         $nama_subkategori = $request->nama_subkategori;
         $subkategoris = SubkategoriModel::where('nama_subkategori', $request->nama_subkategori)->get();
 
         if (count($subkategoris) > 0) {
-            return redirect('/subkategori')->with('error', 'Data gagal ditambahkan');
+            return redirect('/kategori')->with('error', 'Data gagal ditambahkan');
         } else {
             SubkategoriModel::create([
                 'nama_subkategori' => $request->nama_subkategori,

@@ -62,6 +62,9 @@ class DatabaseSeeder extends Seeder
         DB::table('subkategori_models')->insert([
             'nama_subkategori' => 'Organisasi Kepemimpinan',
         ]);
+        DB::table('subkategori_models')->insert([
+            'nama_subkategori' => 'Lainnya',
+        ]);
 
         DB::table('keaktifan_mahasiswa_models')->insert([
             'nim' => '201810370311003',
@@ -126,6 +129,16 @@ class DatabaseSeeder extends Seeder
             'tingkat_kegiatan' => 'Fakultas',
             'point_kegiatan' => 20
         ]);
+        
+        DB::table('kegiatan_models')->insert([
+            'nama_kegiatan' => '-',
+            'kategori_kegiatan' => 'Pilihan',
+            'subkategori_kegiatan' => 'Lainnya',
+            'kedudukan_kegiatan' => '-',
+            'tingkat_kegiatan' => '-',
+            'point_kegiatan' => 20
+        ]);
+        
         
 
     }
