@@ -62,10 +62,13 @@ class AuthController extends Controller
 
     // register view page
     public function register(){
+        // mengambil data userModel dan mengaambil yang role dosen
+        $dosen = UsersModel::where('role', 'Dosen')->get();
+
         if(session('user')){
             return redirect('/');
         }else{
-            return view('auth.register', ['title' => 'Register | Sistem Pendataan Keaktifan Mahasiswa']);
+            return view('auth.register', ['title' => 'Register | Sistem Pendataan Keaktifan Mahasiswa', 'dosen' => $dosen]);
         }
     }
 
@@ -94,7 +97,7 @@ class AuthController extends Controller
                 'name' => $request->nama,
                 'email' => $request->email,
                 'prodi' => $request->prodi,
-                // 'tahun_ajaran' => $request->tahun_ajaran,
+                'nip_dosen' => $request->dosen,
                 'total_point' => 0
             ];
 
@@ -128,9 +131,66 @@ class AuthController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request)
     {
-        //
+        try{
+        $role = $request->role;
+        if($role == 'Dosen'){
+            $data_dosen = UsersModel::where('nip', $request->nip)->get()[0];
+            
+            if($request->email == $data_dosen->email && $request->password == $data_dosen->password && $request->name == $data_dosen->name){
+                return redirect('/data-dosen')->with('error', 'Data Dosen Tidak Berubah');
+            }else{
+
+                if($request->password != $data_dosen->password){
+
+                UsersModel::where('nip', $request->nip)->update([
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'name' => $request->name
+                ]);                
+                }else{
+
+                    UsersModel::where('nip', $request->nip)->update([
+                        'email' => $request->email,
+                        'name' => $request->name
+                    ]);
+                }
+
+                // update session 'user' dengan data yang baru dari database users
+                $request->session()->put('user', UsersModel::where('nip', $request->nip)->get()[0]);
+                return redirect('/data-dosen')->with('message', 'Data Dosen Berhasil Berubah');
+            }
+
+            
+        }else{
+            $mahasiswa = MahasiswaModel::where('nim', $request->nim)->get()[0];
+            
+            if($request->email == $mahasiswa->email && $request->password == $mahasiswa->password && $request->name == $mahasiswa->name){
+                return redirect('/')->with('message', 'Data Tidak Berubah');
+            }else{
+                if($request->password != $mahasiswa->password){
+                    MahasiswaModel::where('nim', $request->nim)->update([
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password),
+                        'name' => $request->name
+                    ]);
+                }else{
+
+                    MahasiswaModel::where('nim', $request->nim)->update([
+                        'email' => $request->email,
+                        'name' => $request->name
+                    ]);
+                }
+
+                // update session 'user' dengan data yang baru dari database users
+                $request->session()->put('user', MahasiswaModel::where('nim', $request->nim)->get()[0]);
+                return redirect('/')->with('message', 'Data Berhasil Berubah ');
+            }
+        }}catch(\Exception $e){
+            return redirect('/')->with('message', 'Data gagal Dirubah');
+        }
+        
     }
 
     /**

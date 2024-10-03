@@ -34,6 +34,9 @@ Route::get('/register', [AuthController::class, 'register'])->name('register');
 // process register
 Route::post('/prosesregist', [AuthController::class, 'store']);
 
+// proses edit-profile
+Route::post('/edit-profile', [AuthController::class, 'edit']);
+
 // logout
 Route::post('/logout', [AuthController::class, 'destroy']);
 
@@ -107,7 +110,13 @@ Route::post('/uploadpoint', [KeaktifanMahasiswaController::class, 'store'])->nam
 Route::get('/filekegiatan/{file}', [KeaktifanMahasiswaController::class, 'showfile'])->name('file-upload');
 
 // view profilttd
-Route::get('/profilttd', [KeaktifanMahasiswaController::class, 'profilttd'])->name('profil');
+Route::get('/data-dosen', [KeaktifanMahasiswaController::class, 'datadosen'])->name('profil');
+
+// add dosen
+Route::post('/adddosen', [KeaktifanMahasiswaController::class, 'add_dosen'])->name('add-dosen');
+
+// delete dosen
+Route::post('/deletedosen', [KeaktifanMahasiswaController::class, 'delete_dosen'])->name('delete-dosen');
 
 // proses edit profil ttd
-Route::post('/editprofilttd', [KeaktifanMahasiswaController::class, 'editprofilttd'])->name('edit-profil-ttd');
+Route::post('/editdosen', [KeaktifanMahasiswaController::class, 'editdosen'])->name('edit-profil-ttd');

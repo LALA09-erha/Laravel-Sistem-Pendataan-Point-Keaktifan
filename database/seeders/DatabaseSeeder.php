@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
         DB::table('mahasiswa_models')->insert([
             'nim' => '201810370311003',
             'name' => 'Muhammad Fauzan',
+            'nip_dosen' => '207406202006041003',
             'email' => '201810370311003@student.trunohoyo.ac.id',
             'password' => bcrypt('201810370311003'),
             'role' => 'Mahasiswa',
@@ -63,8 +64,9 @@ class DatabaseSeeder extends Seeder
             'nama_subkategori' => 'Organisasi Kepemimpinan',
         ]);
         DB::table('subkategori_models')->insert([
-            'nama_subkategori' => 'Lainnya',
+            'nama_subkategori' => 'Kegiatan Penalaran dan Kreativitas',
         ]);
+        
 
         DB::table('keaktifan_mahasiswa_models')->insert([
             'nim' => '201810370311003',
@@ -128,18 +130,16 @@ class DatabaseSeeder extends Seeder
             'kedudukan_kegiatan' => 'Ketua',
             'tingkat_kegiatan' => 'Fakultas',
             'point_kegiatan' => 20
-        ]);
-        
+        ]);        
+
         DB::table('kegiatan_models')->insert([
-            'nama_kegiatan' => '-',
+            'nama_kegiatan' => 'Kegiatan Lomba Ilmiah lainnya',
             'kategori_kegiatan' => 'Pilihan',
-            'subkategori_kegiatan' => 'Lainnya',
-            'kedudukan_kegiatan' => '-',
-            'tingkat_kegiatan' => '-',
+            'subkategori_kegiatan' => 'Kegiatan Penalaran dan Kreativitas',
+            'kedudukan_kegiatan' => 'Juara 1',
+            'tingkat_kegiatan' => 'Fakultas',
             'point_kegiatan' => 20
         ]);
-        
-        
 
     }
 }

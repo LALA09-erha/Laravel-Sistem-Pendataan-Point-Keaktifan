@@ -6,14 +6,14 @@
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Profil TTD</h3>
-                <p class="text-subtitle text-muted">Page ini berisikan tentang Profil TTD</p>
+                <h3>Data Dosen</h3>
+                <p class="text-subtitle text-muted">Page ini berisikan tentang Data Dosen</p>
             </div>
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Profil TTD</li>
+                        <li class="breadcrumb-item active" aria-current="page">Data Dosen</li>
                     </ol>
                 </nav>
             </div>
@@ -22,10 +22,10 @@
     <section class="section">
         <div class="card">
             <div class="card-header">
-                {{-- <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                     data-bs-target="#inlineForm">
-                    Tambah Profil TTD
-                </button> --}}
+                    Tambah Dosen
+                </button>
                 <!--login form Modal -->
                 <div class="modal fade text-left" id="inlineForm" tabindex="-1"
                     role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
@@ -34,23 +34,38 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalScrollableTitle">
-                                    Tambah Kedudukan</h5>
+                                    Tambah Dosen</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal"
                                     aria-label="Close">
                                     <i data-feather="x"></i>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="/tambahsubkategori" method="post" style="width:100%">
+                                <form action="/adddosen" method="post" style="width:100%">
                                     @csrf
                                     <div class="form-group has-icon-left" style="width: 100%">
-                                        <label for="password-id-icon">Profil TTD</label>
+                                        <label for="password-id-icon">NIP</label>
                                         <div class="position-relative">
-                                            <input type="text" class="form-control" name="nama_subkategori"
-                                                placeholder="Profil TTD" id="password-id-icon" required>
+                                            <input type="number" class="form-control" name="nip"
+                                                placeholder="Masukkan NIP" id="password-id-icon" required>
                                             <div class="form-control-icon">
-                                                <i class="bi bi-book"></i>
+                                                <i class="bi bi-calendar2"></i>
                                             </div>
+                                        </div>
+                                        <label for="password-id-icon">Nama</label>
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control" name="nama"
+                                                placeholder="Masukkan Nama" id="password-id-icon" required>
+                                            <div class="form-control-icon">
+                                                <i class="bi bi-person"></i>
+                                            </div>
+                                        </div>
+                                        <label for="password-id-icon">Role</label>
+                                        <div class="position-relative">
+                                            <select name="role" id="role" class="form-select">
+                                                <option value="Dosen">Dosen</option>                                        
+                                                <option value="Admin">Admin</option>
+                                            </select>
                                         </div>
                                     </div>                                                                                            
                                 </div>
@@ -71,7 +86,6 @@
                 <table class="table table-striped" id="table1">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>NIP</th>     
                             <th>NAMA</th>     
                             <th>JABATAN</th>     
@@ -79,23 +93,18 @@
                         </tr>
                     </thead>
                     <tbody>  
-                        @php
-                        
-                        $index = 1;
-                        @endphp
-                        
-                        @foreach ($data as $subkategori)   
+                       
+                        @foreach ($data as $dt)   
                         <tr>
-                            <td>{{$index++}}</td>
-                            <td>{{$subkategori['nip']}}</td>
-                            <td>{{$subkategori['nama']}}</td>
-                            <td>{{$subkategori['jabatan']}}</td>
+                            <td>{{$dt['nip']}}</td>
+                            <td>{{$dt['name']}}</td>
+                            <td>{{$dt['role']}}</td>
                             <td>
-                                <button data-bs-target="#inlineForm{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
-                                {{-- <button data-bs-target="#delete{{$subkategori['id']}}" data-bs-toggle="modal" class="btn btn-danger">Delete</button> --}}
+                                <button data-bs-target="#inlineForm{{$dt['nip']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
+                                <button data-bs-target="#delete{{$dt['nip']}}" data-bs-toggle="modal" class="btn btn-danger">Delete</button>
                             </td>
                         </tr>
-                        <div class="modal fade text-left" id="delete{{$subkategori['id']}}" tabindex="-1"
+                        <div class="modal fade text-left" id="delete{{$dt['nip']}}" tabindex="-1"
                             role="dialog" aria-labelledby="myModalLabel130"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
@@ -103,7 +112,7 @@
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary">
                                         <h5 class="modal-title white" id="myModalLabel130">
-                                            Delete Profil TTD
+                                            Delete Dosen
                                         </h5>
                                         <button type="button" class="close"
                                             data-bs-dismiss="modal" aria-label="Close">
@@ -111,12 +120,12 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                    Are you sure you want to delete Profil TTD?
+                                    Are you sure you want to delete Dosen?
                                     </div>
                                     <div class="modal-footer">
-                                        <form action="/deletesubkategori" method="post">
+                                        <form action="/deletedosen" method="post">
                                             @csrf
-                                            <input type="hidden" name="id" value="{{$subkategori['id']}}">
+                                            <input type="hidden" name="id" value="{{$dt['nip']}}">
                                             <button type="button"
                                                 class="btn btn-light-secondary"
                                                 data-bs-dismiss="modal">
@@ -132,47 +141,46 @@
                             </div>
                         </div>
 
-                        <div class="modal fade text-left" id="inlineForm{{$subkategori['id']}}" tabindex="-1"
+                        <div class="modal fade text-left" id="inlineForm{{$dt['nip']}}" tabindex="-1"
                             role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-scrollable"
                                 role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="exampleModalScrollableTitle">
-                                            Edit Profil TTD</h5>
+                                            Edit Dosen</h5>
                                         <button type="button" class="close" data-bs-dismiss="modal"
                                             aria-label="Close">
                                             <i data-feather="x"></i>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="/editprofilttd" method="post" style="width:100%">
+                                        <form action="/editdosen" method="post" style="width:100%">
                                             @csrf
                                             <div class="form-group has-icon-left" style="width: 100%">
-                                                <input type="hidden" name="id" value="{{$subkategori['id']}}">
+                                                <input type="hidden" name="id" value="{{$dt['nip']}}">
                                                 <label for="password-id-icon">NIP</label>
                                                 <div class="position-relative">
                                                     <input type="number" class="form-control" name="nip"
-                                                        placeholder="NIP Profil TTD" id="password-id-icon" value="{{$subkategori['nip']}}" required>
+                                                        placeholder="NIP Dosen" id="password-id-icon" value="{{$dt['nip']}}" required>
                                                     <div class="form-control-icon">
-                                                        <i class="bi bi-book"></i>
+                                                        <i class="bi bi-calendar2"></i>
                                                     </div>
                                                 </div>
-                                                <label for="password-id-icon">Profil TTD</label>
+                                                <label for="password-id-icon">Nama Dosen</label>
                                                 <div class="position-relative">
                                                     <input type="text" class="form-control" name="nama"
-                                                        placeholder="Nama Profil TTD" id="password-id-icon" value="{{$subkategori['nama']}}" required>
+                                                        placeholder="Nama Dosen" id="password-id-icon" value="{{$dt['name']}}" required>
                                                     <div class="form-control-icon">
-                                                        <i class="bi bi-book"></i>
+                                                        <i class="bi bi-person"></i>
                                                     </div>
                                                 </div>
-                                                <label for="password-id-icon">Profil TTD</label>
+                                                <label for="password-id-icon">Role</label>
                                                 <div class="position-relative">
-                                                    <input type="text" class="form-control" name="jabatan"
-                                                        placeholder="Jabatan Profil TTD" id="password-id-icon" value="{{$subkategori['jabatan']}}" required>
-                                                    <div class="form-control-icon">
-                                                        <i class="bi bi-book"></i>
-                                                    </div>
+                                                    <select name="role" id="role" class="form-select">
+                                                        <option value="Dosen" <?php if($dt['role'] == 'Dosen'){echo "selected";}?>>Dosen</option>                                        
+                                                        <option value="Admin" <?php if($dt['role'] == 'Admin'){echo "selected";}?>>Admin</option>
+                                                    </select>
                                                 </div>
                                             </div>                                                                                            
                                         </div>

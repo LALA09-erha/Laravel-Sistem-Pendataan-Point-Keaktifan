@@ -7,11 +7,14 @@ use App\Models\KegiatanModel;
 use App\Models\MahasiswaModel;
 use App\Models\ProfilTtdModel;
 use App\Models\SubkategoriModel;
+use App\Models\UsersModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\PDF;
 use Dompdf\Options;
 use LengthException;
+use Illuminate\Support\Facades\Hash;
+use PhpParser\Node\Expr\Cast\String_;
 
 class KeaktifanMahasiswaController extends Controller
 {
@@ -26,8 +29,8 @@ class KeaktifanMahasiswaController extends Controller
             if (session('user')['role'] == 'Mahasiswa') {
                 return redirect('login');
             } else {
-                // ambil model mahasiswa dari database
-                $mahasiswas = MahasiswaModel::all();
+                // ambil model mahasiswa dari database yang nip_dosen sesuai session(user)['nip']
+                $mahasiswas = MahasiswaModel::where('nip_dosen', session('user')['nip'])->get();
                 return view('home.keaktifanmahasiswa', ['mahasiswas' => $mahasiswas, 'title' => 'Data Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa']);
             }
         }
@@ -42,10 +45,19 @@ class KeaktifanMahasiswaController extends Controller
             if (session('user')['role'] == 'Mahasiswa') {
                 return redirect('login');
             } else {
+                // dd(session('user')['nip']);    
+                $nip = session('user')['nip'];
+
                 // ambil model keaktifan mahasiswa dari database dengan status menunggu dengan data yang unique nim
-                $keaktifans = KeaktifanMahasiswaModel::where('status', 'Menunggu')->get();
+                $keaktifans = KeaktifanMahasiswaModel::join('mahasiswa_models', 'keaktifan_mahasiswa_models.nim', '=', 'mahasiswa_models.nim') // Join on nim
+                ->where('mahasiswa_models.nip_dosen', $nip) // Filter by nip_dosen
+                ->where('keaktifan_mahasiswa_models.status', 'Menunggu') // Filter by status
+                ->select('keaktifan_mahasiswa_models.*', 'mahasiswa_models.nim') // Select relevant columns
+                ->get();
 
                 $keaktifans = $keaktifans->unique('nim');
+
+                // dd($keaktifans);
                 
                 return view('home.validasikeaktifanmahasiswa', ['title' => 'Validasi Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'keaktifans' => $keaktifans]);
             }
@@ -132,44 +144,23 @@ class KeaktifanMahasiswaController extends Controller
 
         $kedudukan_temp = $request['kedudukan_' . $sub_kategori_temp];
 
-        $tingkat_temp = $request['tingkatan_' . $sub_kategori_temp];        
+        $tingkat_temp = $request['tingkatan_' . $sub_kategori_temp]; 
+        
+        $sub_kegiatan = null;
+        
+        if($kegiatan_temp == "null" || $kedudukan_temp == "null" || $tingkat_temp == "null"){
+            return redirect('/uploaddatakeaktifan')->with('message', 'Semua kolom harus diisi');
+        }else if(strpos(strtolower($kegiatan_temp), 'lainnya') !== false ){
+            if($request->sub_kegiatan == null){
+                return redirect('/uploaddatakeaktifan')->with('message', 'Sub Kegiatan harus diisi');
+            }
+            $sub_kegiatan = $request->sub_kegiatan;
+        }
 
-        // dd($sub_kategori, $sub_kategori_temp, $kegiatan_temp, $kedudukan_temp, $tingkat_temp);
 
         try {
 
-            if($sub_kategori == 'Lainnya'){
-                $data_kegiatan = KegiatanModel::where('subkategori_kegiatan', $sub_kategori)->get();
-
-                // nama mahasiswa
-            $nama_mahasiswa = $request->nama;
-
-            // nim
-            $nim = $request->nim;
-
-            // tanggal kegiatan
-            $tanggal = $request->tanggal;
-
-            // point kegiatan
-            $point_kegiatan = $data_kegiatan[0]->point_kegiatan;
-
-            // nama kegiatan
-            $nama_kegiatan =  $kegiatan_temp;
-
-            // kategori kegiatan
-            $kategori_kegiatan = $data_kegiatan[0]->kategori_kegiatan;
-
-            // subkategori kegiatan
-            $subkategori_kegiatan = $sub_kategori;
-
-            //kedudukan kegiatan
-            $kedudukan_kegiatan = $kedudukan_temp;
-
-            // tingkat kegiatan
-            $tingkat_kegiatan = $tingkat_temp;
-
-
-            }else{
+            
                 // ambil data kegiatan berdasarkan id kegiatan
             $data_kegiatan = KegiatanModel::where('nama_kegiatan', $kegiatan_temp)->where('subkategori_kegiatan', $sub_kategori)->where('kedudukan_kegiatan', $kedudukan_temp)->where('tingkat_kegiatan', $tingkat_temp)->get();
             
@@ -187,7 +178,12 @@ class KeaktifanMahasiswaController extends Controller
             $point_kegiatan = $data_kegiatan[0]->point_kegiatan;
 
             // nama kegiatan
-            $nama_kegiatan = $data_kegiatan[0]->nama_kegiatan ;
+            if($sub_kegiatan != null){
+                $nama_kegiatan = $data_kegiatan[0]->nama_kegiatan . " - " . $sub_kegiatan;
+            }else{
+                $nama_kegiatan = $data_kegiatan[0]->nama_kegiatan ;
+            }
+            
 
             // kategori kegiatan
             $kategori_kegiatan = $data_kegiatan[0]->kategori_kegiatan;
@@ -200,9 +196,7 @@ class KeaktifanMahasiswaController extends Controller
 
             // tingkat kegiatan
             $tingkat_kegiatan = $data_kegiatan[0]->tingkat_kegiatan;
-                
-            }        
-
+                  
             // nama file
             $nama_file = $nim . "." . date('Y.m.d.H.i.s') . "." . $request->file('file')->extension();
 
@@ -355,7 +349,9 @@ class KeaktifanMahasiswaController extends Controller
         $data = MahasiswaModel::where('nim', $nim)->get()[0];
         $mahasiswa = KeaktifanMahasiswaModel::where('nim', $nim)->where('status', 'Disetujui')->get();
 
-        $datattd = ProfilTtdModel::all();
+        // mengambil nip_dosen dari data mahasiswa dan mencari data dosen berdasarkan nip
+        $dosen = UsersModel::where('nip', $data->nip_dosen)->get()[0];
+        // dd($dosen);
 
         // buatkan data yang unik di sub kategori keaktifan mahasiswa dan kategori pilihan
         $data_unik = [];
@@ -502,15 +498,15 @@ class KeaktifanMahasiswaController extends Controller
 
         <div class="footer">
             Bangkalan, ' . date('d F Y') . '<br>
-            '. $datattd[0]->jabatan.'
+            Dosen Wali
             <br>
             <br>
             <br>
             <br>
             <br>
             <br>
-            '. $datattd[0]->nama .' <br>
-            NIP: '. $datattd[0]->nip . '
+            '. $dosen->name .' <br>
+            NIP: '. $dosen->nip . '
         </div>
 
         </body>
@@ -560,14 +556,14 @@ class KeaktifanMahasiswaController extends Controller
         //
     }
 
-    public function profilttd(Request $request)
+    public function datadosen(Request $request)
     {   
         try{
             // jika bukan Admin
             if(session('user')['role'] == 'Admin'){
-                $data = ProfilTtdModel::all();
-                return view('home.profilttd', [
-                    'data' => $data , 'title' => 'Profil TTD Transkip | Sistem Pendataan Keaktifan Mahasiswa'
+                $data = UsersModel::all();
+                return view('home.datadosen', [
+                    'data' => $data , 'title' => 'Data Dosen | Sistem Pendataan Keaktifan Mahasiswa'
                 ]);
             }else{
                 return redirect('/');
@@ -579,27 +575,52 @@ class KeaktifanMahasiswaController extends Controller
         }
     }
 
-    public function editprofilttd(Request $request )
-    {
+    public function add_dosen(Request $request ){
 
-        $data = ProfilTtdModel::where('id', $request->id)->get();
-
-        // dd($data[0],$request->all());
-
-        if(count($data) > 0){
-            // jika tidak ada yang berubah maka return false
-            if($data[0]->nama == $request->nama && $data[0]->nip == $request->nip && $data[0]->jabatan == $request->jabatan){
-                return redirect('/profilttd')->with('error', 'Data tidak berubah');
+        try{
+            // cek apakah dosen sudah ada berdaasarkan NIP
+            $data = UsersModel::where('nip', $request->nip)->get();
+            if(count($data) > 0){
+                return redirect('/data-dosen')->with('error', 'Dosen sudah ada');
             }else{
-                ProfilTtdModel::where('id', $request->id)->update([
-                    'nama' => $request->nama,
+                UsersModel::create([
+                    'role' => 'Dosen',
                     'nip' => $request->nip,
-                    'jabatan' => $request->jabatan
+                    'name' => $request->nama,
+                    'email' => strval($request->nip) . '@trunojoyo.ac.id',                    
+                    'password' => Hash::make($request->nip),
                 ]);
-                return redirect('/profilttd')->with('message', 'Data berhasil dirubah');
+                return redirect('/data-dosen')->with('message', 'Data Dosen Berhasili');                
             }
+        }catch(\Throwable $th){
+            return redirect('/data-dosen')->with('error', 'Data Dosen Gagal' . $th);
+        }
+        
+    }
+
+    public function delete_dosen(Request $request ){
+        try{
+            UsersModel::where('nip', $request->id)->delete();
+            return redirect('/data-dosen')->with('message', 'Data Dosen Berhasil DiHapus');
+        }catch(\Throwable $th){
+            return redirect('/data-dosen')->with('error', 'Data Dosen Gagal' . $th);
+        }
+    }
+
+    public function editdosen(Request $request )
+    {
+        $data = UsersModel::where('nip', $request->nip)->get();
+
+        // check with database
+        if($request->nip == $data[0]->nip && $request->nama == $data[0]->name && $request->role == $data[0]->role){
+            return redirect('/data-dosen')->with('error', 'Data Dosen Tidak Berubah');
         }else{
-            return redirect('/profilttd')->with('error', 'Data gagal dirubah');
+            UsersModel::where('nip', $request->nip)->update([
+                'name' => $request->nama,
+                'role' => $request->role,
+                'nip' => $request->nip
+            ]);
+            return redirect('/data-dosen')->with('message', 'Data Dosen Berhasil Berubah');
         }
 
     }

@@ -128,11 +128,11 @@
                         </li>
                         
                         <li class="sidebar-item {{
-                            $title=='Profil TTD Transkip | Sistem Pendataan Keaktifan Mahasiswa' ? 'active' : ''
+                            $title=='Data Dosen | Sistem Pendataan Keaktifan Mahasiswa' ? 'active' : ''
                         }}">
-                            <a href="/profilttd" class='sidebar-link'>
-                                <i class="bi bi-journal-text"></i>
-                                <span>Profil TTD Transkip</span>
+                            <a href="/data-dosen" class='sidebar-link'>
+                                <i class="bi bi-funnel"></i>
+                                <span>Data Dosen</span>
                             </a>
                         </li>
 
@@ -229,12 +229,9 @@
             <footer>
                 <div class="footer clearfix mb-0 text-muted">
                     <div class="float-start">
-                        <p>2024 &copy; CocoPou (●'◡'●)</p>
+                        <p>2024 &copy; Universitas Trunojoyo Madura</p>
                     </div>
-                    <div class="float-end">
-                        <p>Crafted with <span class="text-danger">❤</span> by <a
-                                href="/">NPC</a></p>
-                    </div>
+                    
                 </div>
             </footer>
         </div>

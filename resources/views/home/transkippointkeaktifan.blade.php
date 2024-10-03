@@ -29,7 +29,7 @@
                 <form action="/downloadtranskippointkeaktifan" method="post">
                     @csrf
                     <input type="hidden" name="nim" value="{{$nim}}">
-                    <button onclick="startLoader(alert('Tunggu Sebentar, Halaman akan Otomatis Refresh'))"
+                    <button  onclick="return alert('Download Transkip Segera Di Lakukan, Harap Tunggu')" 
                     @if($mahasiswa == null || count($mahasiswa) == 0)
                         disabled
                     @endif
@@ -78,10 +78,15 @@
                     </tbody>
                 </table>
                 @endif
-            </div>
+            </div>        
         </div>
-
     </section>
 </div>
+
+<script>
+    function loader(){
+        
+    }
+</script>
 
 @endsection

@@ -13,32 +13,39 @@
 @endif
 <form action="/prosesregist" method="post">
     @csrf
-    <div class="form-group position-relative has-icon-left mb-4">
+    <label for="nim">NIM Mahasiswa</label>
+    <div class="form-group position-relative has-icon-left mb-2">
         <input type="number" class="form-control form-control-xl" name="nim" placeholder="Masukkan NIM" autofocus required>
         <div class="form-control-icon">
             <i class="bi bi-type-italic"></i>
         </div>
     </div>
-    <div class="form-group position-relative has-icon-left mb-4">
+    <label for="name">Nama Mahasiswa</label>
+    <div class="form-group position-relative has-icon-left mb-2">
         <input type="text" class="form-control form-control-xl" name="nama" placeholder="Masukkan Nama" required>
         <div class="form-control-icon">
             <i class="bi bi-person"></i>
         </div>
     </div>
-    <div class="form-group position-relative has-icon-left mb-4">
+    <label for="email">Email Mahasiswa </label>
+    <div class="form-group position-relative has-icon-left mb-2">
         <input type="email" class="form-control form-control-xl" name="email" placeholder="Masukkan Email" required>
         <div class="form-control-icon">
             <i class="bi bi-envelope"></i>
         </div>
     </div>
-    {{-- <div class="form-group position-relative has-icon-left mb-4">
-        <input type="number" class="form-control form-control-xl" name="tahun_ajaran" placeholder="Tahun Ajaran" required>
-        <div class="form-control-icon">
-            <i class="bi bi-clock"></i>
-        </div>
-    </div> --}}
-    {{-- dropdown prodi di sini pada prodi yang ada di universitas --}}
-    <div class="form-group position-relative has-icon-left mb-4">
+    
+    <label for="dosen">Dosen Wali</label>
+    <div class="form-group position-relative has-icon-left mb-2">
+        <select name="dosen" id="dosen" class="form-select" required >
+            @foreach ($dosen as $dsn)
+            <option value="{{$dsn->nip}}">{{$dsn->name}}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <label for="prodi">Program Studi</label>
+    <div class="form-group position-relative has-icon-left mb-2">
         <select name="prodi" id="prodi" class="form-select" required >
             <option value="Teknik Informatika">Teknik Informatika</option>
             <option value="Sistem Informasi">Sistem Informasi</option>
@@ -50,8 +57,8 @@
     </div>
 
 
-
-    <div class="form-group position-relative has-icon-left mb-4"> 
+    <label for="password">Password</label>
+    <div class="form-group position-relative has-icon-left mb-2"> 
         <input type="password" class="form-control form-control-xl" name="password" placeholder="Password" required>
         <div class="form-control-icon">
             <i class="bi bi-shield-lock"></i>

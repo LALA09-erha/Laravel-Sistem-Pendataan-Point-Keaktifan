@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('mahasiswa_models', function (Blueprint $table) {
             $table->string('nim')->unique();
+            $table->string('nip_dosen');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('role');
             $table->string('tahun_ajaran')->nullable();
             $table->string('prodi');
-            $table->integer('total_point')->default(0);
+            $table->integer('total_point')->default(0);            
             $table->timestamps();
         });
     }
