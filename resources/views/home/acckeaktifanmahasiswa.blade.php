@@ -71,7 +71,7 @@
                              <td>{{$mhs['status']}}</td>
                             <td>
                                 {{-- detail by nim --}}
-                                <button data-bs-target="#detailkeaktifan{{$mhs['id']}}" data-bs-toggle="modal" class="btn btn-primary">Edit</button>
+                                <button data-bs-target="#detailkeaktifan{{$mhs['id']}}" data-bs-toggle="modal" class="btn btn-primary">Aksi</button>
                             </td>
                         </tr>
                         <div class="modal fade text-left" id="detailkeaktifan{{$mhs['id']}}" tabindex="-1"

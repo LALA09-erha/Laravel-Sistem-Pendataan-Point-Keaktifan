@@ -23,6 +23,7 @@
         </div>
         <div class="col-12 col-lg-4">
             <div class="card m-2">
+                <img src="https://i.pinimg.com/originals/33/ba/c0/33bac083ba44f180c1435fc41975bf36.jpg" class="card-img-top" alt="...">
                 <h5 class="m-2" > Data User:</h5>
                 <p class="m-2" >{{$user['name']}}</p>
                 <p class="m-2" >{{$user['role']=='Mahasiswa'?$user['nim']:$user['nip']}}</p>

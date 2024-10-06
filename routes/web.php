@@ -34,6 +34,18 @@ Route::get('/register', [AuthController::class, 'register'])->name('register');
 // process register
 Route::post('/prosesregist', [AuthController::class, 'store']);
 
+// forgot password
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword']);
+
+// reset password
+Route::post('/prosesForgot', [AuthController::class, 'prosesForgot']);
+
+// reset password view
+Route::get('/reset-password', [AuthController::class, 'resetPassword']);
+
+// proses reset password
+Route::post('/prosesReset', [AuthController::class, 'prosesResetPassword']);
+
 // proses edit-profile
 Route::post('/edit-profile', [AuthController::class, 'edit']);
 

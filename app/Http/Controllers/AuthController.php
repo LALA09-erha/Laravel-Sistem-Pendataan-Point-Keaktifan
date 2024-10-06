@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MahasiswaModel;
 use App\Models\UsersModel;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+ use Illuminate\Support\Facades\Mail;
+ 
+
 
 
 class AuthController extends Controller
@@ -102,8 +107,9 @@ class AuthController extends Controller
             ];
 
             // mengecek apakah nim sudah terdaftar
-            $cek = MahasiswaModel::where('nim', $request->nim)->first();
-            if($cek){
+            $cek = UsersModel::where('nip', $request->nim)->first();
+            $cek2 = UsersModel::where('email', $request->email)->first();
+            if($cek || $cek2){
                 return redirect('/register')->with('message', 'Data gagal ditambahkan');
             }
 
@@ -113,7 +119,6 @@ class AuthController extends Controller
             return redirect('/login')->with('message', 'Data berhasil ditambahkan');
 
         }catch(\Exception $e){
-            dd($e);
             return redirect('/register')->with('message', 'Data gagal ditambahkan');
         }
         // redirect ke halaman login
@@ -211,5 +216,113 @@ class AuthController extends Controller
         $request->session()->flush();
 
         return redirect('/login')->with('message', 'Anda telah logout 🚪');
+    }
+
+
+    public function forgotPassword(Request $request){
+        if(session('user')){
+            return redirect('/');
+        }
+        return view('auth.forgot',  ['title' => 'Forgot Password | Sistem Pendataan Keaktifan Mahasiswa']);
+    }
+
+    public function prosesForgot(Request $request){
+        try{
+        $email = $request->email;
+        $request->validate(['email' => 'required|email']);  
+        $user = UsersModel::where('email', $email)->first();
+        if($user){
+            // cek apakah ada user dengan email tersebut di database 
+            if(DB::table('password_reset_tokens')->where('email', $email)->where('token', 'True')->first()){
+                DB::table('password_reset_tokens')->where('email', $email)->where('token', 'True')->delete();
+            }
+            //cek apakah email tersebut sudah mengirimkan email
+            if(DB::table('password_reset_tokens')->where('email', $email)->where('token', 'False')->first()){
+                return redirect('/forgot-password')->with('message', 'Silahkan cek email anda!');
+            }
+            
+            $resetLink = url("/reset-password?email={$email}");
+
+            $htmlemail = "
+                <h1 style=\"text-align: center; \"  
+                >Reset Password</h1>                 
+                <h3 style=\"text-align: center; \"  
+                >Silahkan Klik Tombol Di Bawah ini Untuk Mengirimkan Link Reset Password</h3>
+                <a href=\"{$resetLink}\" style=\" margin: 0 auto; display: block; padding: 10px; width: 200px; border-radius: 5px; font-weight: bold; text-decoration: none;  text-align: center; size: 20px; color: white; background-color: blue \" >Reset Password</a>
+                <br> 
+                <small style=\"margin: 0 auto; display: block; width: 100%; font-weight: bold;  text-align: center; \" >copyright © - Teknik | Universitas Trunojoyo Madura</small>
+            ";
+
+            //kirim email menggunakan html biasa
+            Mail::html($htmlemail, function ($message) use ($email) {
+                $message->subject('Reset Password');
+                $message->from('2o0t2@example.com', 'Sistem Pendataan Keaktifan Mahasiswa');
+                $message->to($email);
+            });
+
+            DB::table('password_reset_tokens')->insert([
+                'email' => $email,
+                'token' => 'False',
+            ]);            
+           
+            return redirect('/forgot-password')->with('message', 'Email sudah dikirim, Silahkan Cek Email Anda! Periksa Spam dan Klik Tombol "Kelihatannya aman"');
+        }else{
+            return redirect('/forgot-password')->with('message', 'Invalid Email');
+        }
+
+        }catch(\Exception $e){
+            return redirect('/forgot-password')->with('message', 'Terjadi Kesalahan Saat Mengirim Link Reset Password, '.$e->getMessage());
+        }
+    }
+
+    public function resetPassword(Request $request){
+        if(session('user')){
+            return redirect('/');
+        }
+
+        //ambil email dari url
+        $email = $request->email;
+
+        //cek apakah email tersebut ada di database
+        if(DB::table('password_reset_tokens')->where('email', $email)->where('token', 'False')->first()){
+            return view('auth.reset',  ['title' => 'Reset Password | Sistem Pendataan Keaktifan Mahasiswa', 'email' => $email]);
+        }else{
+            return redirect('/login') ;
+        }
+    }
+
+    public function prosesResetPassword(Request $request){
+        try{
+            $request->validate([
+                 'password' => 'required|min:6',
+            ]);
+            
+            $email = $request->email;
+            $password = $request->password;
+
+            //cek email di database mahasiswa dan users
+            $mahasiswa= MahasiswaModel::where('email', $email)->first();
+            $dosen = UsersModel::where('email', $email)->first();
+            if($mahasiswa ){
+                MahasiswaModel::where('email', $email)->update([
+                    'password' => Hash::make($password),
+                ]);
+                
+                DB::table('password_reset_tokens')->where('email', $email)->where('token', 'False')->delete();
+                return redirect('/login')->with('message', 'Password Berhasil Diubah');
+            }else if($dosen){
+                UsersModel::where('email', $email)->update([
+                    'password' => Hash::make($password),
+                ]);
+
+                DB::table('password_reset_tokens')->where('email', $email)->where('token', 'False')->delete();
+                return redirect('/login')->with('message', 'Password Berhasil Diubah');
+            }else{
+                return redirect('/forgot-password')->with('message', 'Invalid Email');
+            }
+        }catch(\Exception $e){
+            return redirect()->back()->with('message', 'Terjadi Kesalahan, '.$e->getMessage());
+        }
+
     }
 }

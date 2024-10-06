@@ -98,9 +98,8 @@
                     {{-- Submit --}}
                     <div class="form-group">
                         <label for="file">Upload File</label>
-                        <input type="file" class="form-control" id="file" name="file" accept=".pdf" required>
+                        <input type="file" class="form-control" id="file" name="file"   required>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>                
             </div>

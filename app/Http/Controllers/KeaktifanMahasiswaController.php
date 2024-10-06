@@ -29,8 +29,13 @@ class KeaktifanMahasiswaController extends Controller
             if (session('user')['role'] == 'Mahasiswa') {
                 return redirect('login');
             } else {
+
+                if(session('user')['role'] == 'Dosen'){
+                    $mahasiswas = MahasiswaModel::where('nip_dosen', session('user')['nip'])->get();
+                }else{
+                    $mahasiswas = MahasiswaModel::all();
+                }
                 // ambil model mahasiswa dari database yang nip_dosen sesuai session(user)['nip']
-                $mahasiswas = MahasiswaModel::where('nip_dosen', session('user')['nip'])->get();
                 return view('home.keaktifanmahasiswa', ['mahasiswas' => $mahasiswas, 'title' => 'Data Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa']);
             }
         }
@@ -45,7 +50,10 @@ class KeaktifanMahasiswaController extends Controller
             if (session('user')['role'] == 'Mahasiswa') {
                 return redirect('login');
             } else {
-                // dd(session('user')['nip']);    
+                // dd(session('user')['nip']);   
+                
+                if(session('user')['role'] == 'Dosen'){
+                
                 $nip = session('user')['nip'];
 
                 // ambil model keaktifan mahasiswa dari database dengan status menunggu dengan data yang unique nim
@@ -54,6 +62,9 @@ class KeaktifanMahasiswaController extends Controller
                 ->where('keaktifan_mahasiswa_models.status', 'Menunggu') // Filter by status
                 ->select('keaktifan_mahasiswa_models.*', 'mahasiswa_models.nim') // Select relevant columns
                 ->get();
+                }else{
+                    $keaktifans = KeaktifanMahasiswaModel::where('status', 'Menunggu')->get();
+                }
 
                 $keaktifans = $keaktifans->unique('nim');
 
@@ -174,6 +185,10 @@ class KeaktifanMahasiswaController extends Controller
             // tanggal kegiatan
             $tanggal = $request->tanggal;
 
+            if($tanggal > date('Y-m-d')){
+                return redirect('/uploaddatakeaktifan')->with('error', 'Tidak dapat menginput kegiatan yang sebelumnya');
+            } 
+
             // point kegiatan
             $point_kegiatan = $data_kegiatan[0]->point_kegiatan;
 
@@ -230,8 +245,7 @@ class KeaktifanMahasiswaController extends Controller
 
             return redirect('/transkippointkeaktifan')->with('message', 'Data berhasil diupload');
         } catch (\Throwable $th) {
-            // dd($th) ;
-            return redirect()->back()->with('error', 'Data gagal diupload');
+            return redirect()->back()->with('error', 'Data gagal diupload, Silahkan coba lagi');
         }
     }
 
@@ -241,17 +255,33 @@ class KeaktifanMahasiswaController extends Controller
      */
     public function show(string $id)
     {
-        // ambil semua data keaktifan mahasiswa berdasarkan nim  mahasiswa
-        $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->get();
-        $data = MahasiswaModel::find($id);
-        return view('home.detailkeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Detail Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
+        if (session('user') == null) {
+            return redirect('login')->with('message', 'Silahkan login terlebih dahulu');
+        } else {
+            if (session('user')['role'] == 'Mahasiswa') {
+                return redirect('login');
+            }else {
+                // ambil semua data keaktifan mahasiswa berdasarkan nim  mahasiswa
+                $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->get();
+                $data = MahasiswaModel::find($id);
+                return view('home.detailkeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Detail Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
+            }
+        }
     }
     public function acc_validasi(string $id)
     {
-        // ambil semua data keaktifan mahasiswa berdasarkan nim  mahasiswa dan data yang belum di validasi
-        $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->where('status', 'Menunggu')->get();
-        $data = MahasiswaModel::find($id);
-        return view('home.acckeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Validasi Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
+        if (session('user') == null) {
+            return redirect('login')->with('message', 'Silahkan login terlebih dahulu');
+        } else {
+            if (session('user')['role'] == 'Mahasiswa') {
+                return redirect('login');
+            }else {
+            // ambil semua data keaktifan mahasiswa berdasarkan nim  mahasiswa dan data yang belum di validasi
+                $mahasiswa = KeaktifanMahasiswaModel::where('nim', $id)->where('status', 'Menunggu')->get();
+                $data = MahasiswaModel::find($id);
+                return view('home.acckeaktifanmahasiswa', ['mahasiswa' => $mahasiswa, 'title' => 'Validasi Keaktifan Mahasiswa | Sistem Pendataan Keaktifan Mahasiswa', 'data' => $data]);
+            }
+        }
     }
 
     /**
@@ -579,21 +609,21 @@ class KeaktifanMahasiswaController extends Controller
 
         try{
             // cek apakah dosen sudah ada berdaasarkan NIP
-            $data = UsersModel::where('nip', $request->nip)->get();
+            $data = MahasiswaModel::where('nim', $request->nip)->get();            
             if(count($data) > 0){
-                return redirect('/data-dosen')->with('error', 'Dosen sudah ada');
+                return redirect('/data-dosen')->with('error', 'Data Dosen Gagal Ditambahkan!');
             }else{
                 UsersModel::create([
-                    'role' => 'Dosen',
+                    'role' => $request->role,
                     'nip' => $request->nip,
                     'name' => $request->nama,
                     'email' => strval($request->nip) . '@trunojoyo.ac.id',                    
                     'password' => Hash::make($request->nip),
                 ]);
-                return redirect('/data-dosen')->with('message', 'Data Dosen Berhasili');                
+                return redirect('/data-dosen')->with('message', 'Data Dosen Berhasil Ditambahkan');                
             }
         }catch(\Throwable $th){
-            return redirect('/data-dosen')->with('error', 'Data Dosen Gagal' . $th);
+            return redirect('/data-dosen')->with('error', 'Data Dosen Gagal Ditambahkan');
         }
         
     }

@@ -2,7 +2,7 @@
     
 @section('content')
 <h1 class="auth-title">Log in.</h1>
-<p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p>
+<p class="auth-subtitle mb-1">Log in with your data that you entered during registration.</p>
 @if (\Session::has('message'))
 <div class="alert alert-danger">    
     <ul>
@@ -27,6 +27,8 @@
     </div>
     <button class="btn btn-primary btn-block btn-lg shadow-lg mt-2">Log in</button>
     <a href="/register" class="btn btn-outline-primary btn-block btn-lg shadow-lg mt-1">Register</a>
+     
+    <a href="/forgot-password" class="text-primary text-center d-block mt-2">Lupa Password ?</a>
 
 </form>
 @endsection
